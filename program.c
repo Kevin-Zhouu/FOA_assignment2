@@ -264,8 +264,8 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
             cur_log_trace = log.trcs[0];
         }
         // printf("comparing:");
-        print_trace(prev_trace);
-        print_trace(cur_trace);
+        // print_trace(prev_trace);
+        // print_trace(cur_trace);
         // printf("\n");
         int is_same = (trace_cmp(cur_trace, prev_trace) == 0);
         if (is_same != TRUE)
@@ -274,8 +274,8 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
             log.trcs[log_index] = cur_trace;
             cur_log_trace = log.trcs[log_index];
             // printf("Not same!\n");
-            print_trace(prev_trace);
-            print_trace(cur_trace);
+            // print_trace(prev_trace);
+            // print_trace(cur_trace);
             stats.n_dis_traces += 1;
 
             // printf("cur_freq: %d\n", cur_log_trace->freq);
