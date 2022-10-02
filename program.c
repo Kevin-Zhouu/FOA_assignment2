@@ -73,8 +73,8 @@ typedef struct
 } log_t;
 typedef struct
 {
-    trace_t *trcs[MAX_TRACE_NUM]; // an array of traces
-    int num_tot_trace;            // the number of distinct traces in this log
+    trace_t *traces[MAX_TRACE_NUM]; // an array of traces
+    int num_traces;                 // the number of distinct traces in this log
 } trace_list_t;
 
 typedef action_t **DF_t; // a directly follows relation over actions
@@ -113,6 +113,11 @@ int main(int argc, char *argv[])
     // freopen("test0.txt", "r", stdin);
 
     trace_list_t *trace_list = read_all_traces();
+    for (int i = 0; i <= trace_list->num_traces; i++)
+    {
+        print_all_trace(trace_list->traces[i]);
+    }
+
     return EXIT_SUCCESS; // remember, algorithms are fun!!!
 }
 /****************************************************************/
@@ -136,6 +141,7 @@ trace_list_t *read_all_traces()
         cur_trace = make_empty_list();
         add_new_trace(trace_list, cur_trace, cur_trace_index);
     }
+    trace_list->num_traces = cur_trace_index;
     return trace_list;
 
     /* ok, first character of next word has been found */
@@ -159,7 +165,7 @@ void add_new_trace(trace_list_t *trace_list, trace_t *cur_trace, int index)
 {
     assert(cur_trace != NULL);
     assert(trace_list != NULL);
-    trace_list->trcs[index] = cur_trace;
+    trace_list->traces[index] = cur_trace;
 }
 
 /* The following codes are derived from the list operations by
