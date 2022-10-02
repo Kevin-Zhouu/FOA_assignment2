@@ -139,7 +139,6 @@ int get_trace(trace_t *cur_trace)
     {
         if (isalnum(cur_char))
         {
-            printf("%c", cur_char);
             insert_at_foot(cur_trace, (action_t)cur_char);
         }
         if (cur_char == '\n')
@@ -246,7 +245,8 @@ void print_trace(trace_t *list)
     cur_event = list->head;
     while (cur_event != NULL)
     {
-        printf(", %d", cur_event->actn);
+        printf(", %c", cur_event->actn);
         cur_event = cur_event->next;
     }
+    printf("\n");
 }
