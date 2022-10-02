@@ -50,7 +50,7 @@
 #define CMP_SMALLER -1
 #define CMP_EQUAL 0
 /* TYPE DEFINITIONS ----------------------------------------------------------*/
-typedef unsigned char action_t; // an action is identified by an integer
+typedef unsigned int action_t; // an action is identified by an integer
 
 typedef struct event event_t; // an event ...
 struct event
@@ -117,12 +117,13 @@ int main(int argc, char *argv[])
 
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
-    for (int i = 0; i < trace_list->num_traces; i++)
+    for (int i = trace_list->num_traces - 1; i >= 0; i++)
     {
-        // print_trace(trace_list->traces[i]);
-        free_list(trace_list->traces[i]);
+        print_trace(trace_list->traces[i]);
     }
-    // free(trace_list);
+
+    // free_list(trace_list->traces[3]);
+    //  free(trace_list);
     return EXIT_SUCCESS; // remember, algorithms are fun!!!
 }
 /****************************************************************/
