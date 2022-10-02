@@ -215,7 +215,7 @@ int trace_cmp(trace_t *trc_A, trace_t *trc_B)
 }
 void trace_swap(trace_list_t *trace_list, int index_A, int index_B)
 {
-    assert(trace_list != NULL && index_A != NULL && index_B != NULL);
+    assert(trace_list != NULL && index_A && index_B);
     trace_t *trc_tmp = trace_list->traces[index_A];
     trace_list->traces[index_A] = trace_list->traces[index_B];
     trace_list->traces[index_B] = trc_tmp;
