@@ -120,8 +120,9 @@ int main(int argc, char *argv[])
     for (int i = 0; i < trace_list->num_traces; i++)
     {
         print_trace(trace_list->traces[i]);
+        free_list(trace_list->traces[i]);
     }
-
+    free(trace_list);
     return EXIT_SUCCESS; // remember, algorithms are fun!!!
 }
 /****************************************************************/
@@ -134,13 +135,15 @@ trace_list_t *read_all_traces()
     trace_t *cur_trace = make_empty_list();
     trace_list_t *trace_list = (trace_list_t *)malloc(sizeof(*trace_list));
     int cur_trace_index = 0;
-    while ((cur_code = get_trace(cur_trace)) == TRACE_END && cur_trace_index <
-                                                                 MAX_TRACE_NUM)
+    while ((cur_code = get_trace(cur_trace)) && cur_trace_index <
+                                                    MAX_TRACE_NUM)
     {
         // check if it is the end of the trace
-        cur_trace = make_empty_list();
         add_new_trace(trace_list, cur_trace, cur_trace_index);
         cur_trace_index++;
+        cur_trace = make_empty_list();
+        if (cur_code == EOF)
+            break;
     }
     trace_list->num_traces = cur_trace_index;
     return trace_list;
@@ -215,7 +218,7 @@ int trace_cmp(trace_t *trc_A, trace_t *trc_B)
 }
 void trace_swap(trace_list_t *trace_list, int index_A, int index_B)
 {
-    assert(trace_list != NULL && index_A && index_B);
+    assert(trace_list != NULL);
     trace_t *trc_tmp = trace_list->traces[index_A];
     trace_list->traces[index_A] = trace_list->traces[index_B];
     trace_list->traces[index_B] = trc_tmp;
