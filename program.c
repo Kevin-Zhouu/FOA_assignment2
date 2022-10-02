@@ -45,12 +45,15 @@
 /* #DEFINE'S -----------------------------------------------------------------*/
 #define GOOD_LUCK "GOOD LUCK CLASS!!!\n" // good luck message
 #define MAX_TRACE_NUM 1000
+#define MAX_EVENT_NUM 1000
 #define TRACE_END 1
 #define CMP_LARGER 1
 #define CMP_SMALLER -1
 #define CMP_EQUAL 0
+#define TRUE 1
+#define FALSE 0
 /* TYPE DEFINITIONS ----------------------------------------------------------*/
-typedef unsigned int action_t; // an action is identified by an integer
+typedef unsigned char action_t; // an action is identified by an integer
 
 typedef struct event event_t; // an event ...
 struct event
@@ -64,31 +67,37 @@ typedef struct
     event_t *head; // a pointer to the first event in this trace
     event_t *foot; // a pointer to the last event in this trace
     int freq;      // the number of times this trace was observed
+    int len;
 } trace_t;
 
 typedef struct
-{                  // an event log is an array of distinct traces
-                   //     sorted lexicographically
-    trace_t *trcs; // an array of traces
-    int ndtr;      // the number of distinct traces in this log
-    int cpct;      // the capacity of this event log as the number
-                   //     of  distinct traces it can hold
+{                   // an event log is an array of distinct traces
+                    //     sorted lexicographically
+    trace_t **trcs; // an array of traces
+    int ndtr;       // the number of distinct traces in this log
+    int cpct;       // the capacity of this event log as the number
+                    //     of  distinct traces it can hold
 } log_t;
 typedef struct
 {
     trace_t *traces[MAX_TRACE_NUM]; // an array of traces
-    int num_traces;                 // the number of distinct traces in this log
+    int num_traces;                 // the number of traces in this log
 } trace_list_t;
-
+typedef struct
+{
+    action_t action;
+    int freq;
+} event_freq_t;
 typedef action_t **DF_t; // a directly follows relation over actions
-
 typedef struct
 {
     int n_dis_events; // the number of distinct events
     int n_dis_traces; // the number of distinct
-    int n_tot_events; // the number of
-    int n_tot_traces; // the number of
-
+    int n_events;     // the number of
+    int n_traces;     // the number of
+    trace_t *most_freq_trc;
+    int max_freq;
+    log_t *trace_log;
 } trace_stats_t;
 /* WHERE IT ALL HAPPENS ------------------------------------------------------*/
 // Function Definitions
@@ -98,7 +107,11 @@ void add_new_trace(trace_list_t *trace_list, trace_t *cur_trace, int index);
 void sort_traces(trace_list_t *trace_list_t);
 int trace_cmp(trace_t *A, trace_t *B);
 void trace_swap(trace_list_t *trace_list, int index_A, int index_B);
-trace_stats_t calc_stats();
+trace_stats_t calc_stats(trace_list_t *trace_list);
+int is_event_exist(event_freq_t *event_freq_list, int n_events,
+                   action_t action);
+int add_event_freq(event_freq_t *event_freq_list, int tot_events,
+                   action_t action, int num_actn);
 void print_stats(trace_stats_t trace_stats);
 // Linked list operations
 trace_t *make_empty_list(void);
@@ -117,13 +130,15 @@ int main(int argc, char *argv[])
 
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
-    for (int i = trace_list->num_traces - 1; i >= 0; i++)
+
+    calc_stats(trace_list);
+    // print_all_trace(trace_list);
+    for (int i = 0; i < trace_list->num_traces; i++)
     {
-        print_trace(trace_list->traces[i]);
+        free_list(trace_list->traces[i]);
     }
 
-    // free_list(trace_list->traces[3]);
-    //  free(trace_list);
+    free(trace_list);
     return EXIT_SUCCESS; // remember, algorithms are fun!!!
 }
 /****************************************************************/
@@ -177,17 +192,17 @@ void sort_traces(trace_list_t *trace_list)
     assert(trace_list != NULL);
     for (int i = 1; i < trace_list->num_traces; i++)
     {
-        trace_t *key = trace_list->traces[i];
-        trace_t *compare = trace_list->traces[i - 1];
-        int j;
-        for (j = i - 1; j >= 0 && trace_cmp(compare, key) == CMP_LARGER;
-             j--)
+        int j = i;
+        trace_t *tmp_trc = trace_list->traces[i];
+        trace_t *cur_trc = trace_list->traces[i];
+        while (j > 0 &&
+               (trace_cmp(trace_list->traces[j - 1],
+                          trace_list->traces[j]) == CMP_LARGER))
+
         {
-            trace_swap(trace_list, j, j + 1);
-            compare = trace_list->traces[j - 1];
-            print_all_trace(trace_list);
+            trace_swap(trace_list, j - 1, j);
+            j--;
         }
-        trace_list->traces[j] = key;
     }
 }
 int trace_cmp(trace_t *trc_A, trace_t *trc_B)
@@ -225,6 +240,123 @@ void trace_swap(trace_list_t *trace_list, int index_A, int index_B)
     trace_list->traces[index_A] = trace_list->traces[index_B];
     trace_list->traces[index_B] = trc_tmp;
 }
+trace_stats_t calc_stats(trace_list_t *trace_list)
+{
+    trace_stats_t stats = {0, 0, 0, 0, NULL, 0, NULL};
+    stats.n_traces = trace_list->num_traces;
+    log_t log = {};
+    log.trcs = (trace_t **)malloc(sizeof(trace_t *) * MAX_TRACE_NUM);
+    log.ndtr = 0;
+    log.cpct = MAX_TRACE_NUM;
+    int log_index = 0;
+
+    trace_t *prev_trace = trace_list->traces[0];
+
+    trace_t *cur_log_trace;
+    // calculate distinct traces
+    for (int i = 0; i < trace_list->num_traces; i++)
+    {
+        trace_t *cur_trace = trace_list->traces[i];
+        if (i == 0)
+        {
+            stats.n_dis_traces = 1;
+            log.trcs[0] = cur_trace;
+            cur_log_trace = log.trcs[0];
+        }
+        // printf("comparing:");
+        print_trace(prev_trace);
+        print_trace(cur_trace);
+        // printf("\n");
+        int is_same = (trace_cmp(cur_trace, prev_trace) == 0);
+        if (is_same != TRUE)
+        {
+            log_index++;
+            log.trcs[log_index] = cur_trace;
+            cur_log_trace = log.trcs[log_index];
+            // printf("Not same!\n");
+            print_trace(prev_trace);
+            print_trace(cur_trace);
+            stats.n_dis_traces += 1;
+
+            // printf("cur_freq: %d\n", cur_log_trace->freq);
+        }
+        cur_log_trace->freq++;
+        stats.n_events += cur_trace->len;
+        if (cur_log_trace->freq > stats.max_freq)
+        {
+            stats.max_freq = cur_log_trace->freq;
+            stats.most_freq_trc = cur_trace;
+        }
+        log.ndtr = stats.n_dis_traces;
+        prev_trace = cur_trace;
+    }
+    // Calculate distinct events
+    event_freq_t event_freq[MAX_EVENT_NUM];
+    int event_freq_index = 0;
+    for (int i = 0; i < stats.n_dis_traces; i++)
+    {
+        trace_t *cur_trace = log.trcs[i];
+        event_t *cur_event = cur_trace->head;
+        // printf("looping:");
+        print_trace(cur_trace);
+        while (cur_event != NULL)
+        {
+            action_t cur_action = cur_event->actn;
+            if (is_event_exist(event_freq, event_freq_index + 1, cur_action) == FALSE)
+            {
+                event_freq[event_freq_index].action = cur_action;
+                event_freq[event_freq_index].freq = cur_trace->freq;
+                event_freq_index++;
+            }
+            else
+            {
+                add_event_freq(event_freq, event_freq_index + 1, cur_action, cur_trace->freq);
+            }
+
+            cur_event = cur_event->next;
+        }
+    }
+    stats.n_dis_events = event_freq_index;
+    printf("Number of distinct events: %d\n", stats.n_dis_events);
+    printf("Number of distinct traces: %d\n", stats.n_dis_traces);
+    printf("Total number of events: %d\n", stats.n_events);
+    printf("Total number of traces: %d\n", stats.n_traces);
+    printf("Most frequent trace frequency: %d\n", stats.max_freq);
+    print_trace(stats.most_freq_trc);
+    for (int i = 0; i < event_freq_index; i++)
+    {
+        printf("%c = %d\n", event_freq[i].action, event_freq[i].freq);
+    }
+
+    return stats;
+}
+int is_event_exist(event_freq_t *event_freq_list, int tot_events,
+                   action_t action)
+{
+    for (int i = 0; i < tot_events; i++)
+    {
+        if (event_freq_list[i].action == action)
+            return TRUE;
+    }
+    return FALSE;
+}
+int add_event_freq(event_freq_t *event_freq_list, int tot_events,
+                   action_t action, int num_actn)
+{
+    assert(event_freq_list != NULL);
+    for (int i = 0; i < tot_events; i++)
+    {
+        if (event_freq_list[i].action == action)
+        {
+            event_freq_list[i].freq += num_actn;
+            return TRUE;
+        }
+    }
+    // not in the array, add to the last element
+    event_freq_list[tot_events].action = action;
+    event_freq_list[tot_events].freq = num_actn;
+    return FALSE;
+}
 /* The following codes are derived from the list operations by
  * Alistair Moffat, PPSAA, Chapter 10, December 2012
  * (c) University of Melbourne */
@@ -234,6 +366,8 @@ make_empty_list(void)
     trace_t *list = (trace_t *)malloc(sizeof(*list));
     assert(list != NULL);
     list->head = list->foot = NULL;
+    list->len = 0;
+    list->freq = 0;
     return list;
 }
 
@@ -271,6 +405,7 @@ insert_at_head(trace_t *list, action_t value)
         /* this is the first insertion into the list */
         list->foot = new;
     }
+    list->len += 1;
     return list;
 }
 
@@ -292,6 +427,7 @@ insert_at_foot(trace_t *list, action_t value)
         list->foot->next = new;
         list->foot = new;
     }
+    list->len += 1;
     return list;
 }
 
@@ -323,13 +459,14 @@ void print_trace(trace_t *list)
     cur_event = list->head;
     while (cur_event != NULL)
     {
-        printf("%c, ", cur_event->actn);
+        printf("%c", cur_event->actn);
         cur_event = cur_event->next;
     }
     printf("\n");
 }
 void print_all_trace(trace_list_t *trace_list)
 {
+    printf("---------------------\n");
     for (int i = 0; i < trace_list->num_traces; i++)
     {
         print_trace(trace_list->traces[i]);
