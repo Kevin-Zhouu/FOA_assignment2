@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
     sort_traces(trace_list);
 
     calc_stats(trace_list);
-    // print_all_trace(trace_list);
+    print_all_trace(trace_list);
     for (int i = 0; i < trace_list->num_traces; i++)
     {
         free_list(trace_list->traces[i]);
