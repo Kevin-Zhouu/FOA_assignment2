@@ -241,7 +241,7 @@ void trace_swap(trace_list_t *trace_list, int index_A, int index_B)
 }
 trace_stats_t calc_stats(trace_list_t *trace_list)
 {
-    trace_stats_t stats = {0, 0, 0, 0, NULL, 0, NULL};
+    trace_stats_t stats = {0, 0, 0, 0, NULL, 0, 0, NULL};
     stats.n_traces = trace_list->num_traces;
     stats.most_freq_trc = (trace_t **)malloc(sizeof(trace_t *) *
                                              stats.n_traces);
