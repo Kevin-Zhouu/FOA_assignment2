@@ -95,8 +95,9 @@ typedef struct
     int n_dis_traces; // the number of distinct
     int n_events;     // the number of
     int n_traces;     // the number of
-    trace_t *most_freq_trc;
+    trace_t **most_freq_trc;
     int max_freq;
+    int num_max_freq_trcs;
     log_t *trace_log;
 } trace_stats_t;
 /* WHERE IT ALL HAPPENS ------------------------------------------------------*/
@@ -126,7 +127,7 @@ void print_all_trace(trace_list_t *trace_list);
 int main(int argc, char *argv[])
 {
 
-    freopen("test0.txt", "r", stdin);
+    // freopen("test0.txt", "r", stdin);
 
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
@@ -242,14 +243,15 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
 {
     trace_stats_t stats = {0, 0, 0, 0, NULL, 0, NULL};
     stats.n_traces = trace_list->num_traces;
+    stats.most_freq_trc = (trace_t **)malloc(sizeof(trace_t *) *
+                                             stats.n_traces);
     log_t log = {};
     log.trcs = (trace_t **)malloc(sizeof(trace_t *) * MAX_TRACE_NUM);
     log.ndtr = 0;
     log.cpct = MAX_TRACE_NUM;
     int log_index = 0;
-
+    int most_freq_trc_index = 0;
     trace_t *prev_trace = trace_list->traces[0];
-
     trace_t *cur_log_trace;
     // calculate distinct traces
     for (int i = 0; i < trace_list->num_traces; i++)
@@ -283,11 +285,18 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
         if (cur_log_trace->freq > stats.max_freq)
         {
             stats.max_freq = cur_log_trace->freq;
-            stats.most_freq_trc = cur_trace;
+            most_freq_trc_index = 0;
+            stats.most_freq_trc[most_freq_trc_index] = cur_trace;
+        }
+        if (cur_log_trace->freq == stats.max_freq)
+        {
+            most_freq_trc_index++;
+            stats.most_freq_trc[most_freq_trc_index] = cur_trace;
         }
         log.ndtr = stats.n_dis_traces;
         prev_trace = cur_trace;
     }
+    stats.num_max_freq_trcs = most_freq_trc_index + 1;
     // Calculate distinct events
     event_freq_t event_freq[MAX_EVENT_NUM];
     int event_freq_index = 0;
@@ -315,11 +324,17 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
         }
     }
     stats.n_dis_events = event_freq_index;
+    printf("==STAGE 0============================\n");
     printf("Number of distinct events: %d\n", stats.n_dis_events);
     printf("Number of distinct traces: %d\n", stats.n_dis_traces);
     printf("Total number of events: %d\n", stats.n_events);
     printf("Total number of traces: %d\n", stats.n_traces);
     printf("Most frequent trace frequency: %d\n", stats.max_freq);
+    for (int i = 0; i < stats.num_max_freq_trcs; i++)
+    {
+        print_trace(stats.most_freq_trc[i]);
+        printf("\n");
+    }
     print_trace(stats.most_freq_trc);
     for (int i = 0; i < event_freq_index; i++)
     {
