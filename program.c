@@ -46,6 +46,9 @@
 #define GOOD_LUCK "GOOD LUCK CLASS!!!\n" // good luck message
 #define MAX_TRACE_NUM 1000
 #define TRACE_END 1
+#define CMP_LARGER 1
+#define CMP_SMALLER -1
+#define CMP_EQUAL 0
 /* TYPE DEFINITIONS ----------------------------------------------------------*/
 typedef unsigned int action_t; // an action is identified by an integer
 
@@ -92,9 +95,9 @@ typedef struct
 trace_list_t *read_all_traces();
 int get_trace(trace_t *cur_trace);
 void add_new_trace(trace_list_t *trace_list, trace_t *cur_trace, int index);
-int sort_traces(trace_list_t *trace_list_t);
-int trace_compare(trace_t A, trace_t B);
-int trace_swap(trace_t *A, trace_t *B);
+void sort_traces(trace_list_t *trace_list_t);
+int trace_cmp(trace_t *A, trace_t *B);
+void trace_swap(trace_list_t *trace_list, int index_A, int index_B);
 trace_stats_t calc_stats();
 void print_stats(trace_stats_t trace_stats);
 // Linked list operations
@@ -110,10 +113,11 @@ void print_trace(trace_t *list);
 int main(int argc, char *argv[])
 {
 
-    // freopen("test0.txt", "r", stdin);
+    freopen("test0.txt", "r", stdin);
 
     trace_list_t *trace_list = read_all_traces();
-    for (int i = 0; i <= trace_list->num_traces; i++)
+    sort_traces(trace_list);
+    for (int i = 0; i < trace_list->num_traces; i++)
     {
         print_trace(trace_list->traces[i]);
     }
@@ -122,11 +126,6 @@ int main(int argc, char *argv[])
 }
 /****************************************************************/
 
-/* extract a single word out of the standard input, but not
-   more than "limit" characters in total. One character of
-   sensible trailing punctuation is retained.
-   argument array W must be limit+1 characters or bigger
-*/
 trace_list_t *read_all_traces()
 {
 
@@ -135,11 +134,13 @@ trace_list_t *read_all_traces()
     trace_t *cur_trace = make_empty_list();
     trace_list_t *trace_list = (trace_list_t *)malloc(sizeof(*trace_list));
     int cur_trace_index = 0;
-    while ((cur_code = get_trace(cur_trace)) == TRACE_END)
+    while ((cur_code = get_trace(cur_trace)) == TRACE_END && cur_trace_index <
+                                                                 MAX_TRACE_NUM)
     {
         // check if it is the end of the trace
         cur_trace = make_empty_list();
         add_new_trace(trace_list, cur_trace, cur_trace_index);
+        cur_trace_index++;
     }
     trace_list->num_traces = cur_trace_index;
     return trace_list;
@@ -167,7 +168,58 @@ void add_new_trace(trace_list_t *trace_list, trace_t *cur_trace, int index)
     assert(trace_list != NULL);
     trace_list->traces[index] = cur_trace;
 }
-
+void sort_traces(trace_list_t *trace_list)
+{
+    assert(trace_list != NULL);
+    for (int i = 1; i < trace_list->num_traces; i++)
+    {
+        trace_t *key = trace_list->traces[i];
+        trace_t *compare = trace_list->traces[i - 1];
+        int j;
+        for (j = i - 1; j >= 0 && trace_cmp(compare, key) == CMP_LARGER;
+             j--)
+        {
+            trace_swap(trace_list, j, j + 1);
+            compare = trace_list->traces[j - 1];
+        }
+        trace_list->traces[j] = key;
+    }
+}
+int trace_cmp(trace_t *trc_A, trace_t *trc_B)
+{
+    assert(trc_A != NULL && trc_B != NULL);
+    event_t *cur_event_A;
+    event_t *cur_event_B;
+    cur_event_A = trc_A->head;
+    cur_event_B = trc_B->head;
+    while (cur_event_A->next != NULL && cur_event_B->next != NULL)
+    {
+        if (cur_event_A->actn == cur_event_B->actn)
+        {
+            cur_event_A = cur_event_A->next;
+            cur_event_B = cur_event_B->next;
+        }
+        else
+        {
+            if (cur_event_A->actn < cur_event_B->actn)
+                return -1;
+            if (cur_event_A->actn > cur_event_B->actn)
+                return 1;
+        }
+    }
+    if (cur_event_A->next == NULL && cur_event_B->next != NULL)
+        return -1;
+    else if (cur_event_A->next != NULL && cur_event_B->next == NULL)
+        return 1;
+    return 0;
+}
+void trace_swap(trace_list_t *trace_list, int index_A, int index_B)
+{
+    assert(trace_list != NULL && index_A != NULL && index_B != NULL);
+    trace_t *trc_tmp = trace_list->traces[index_A];
+    trace_list->traces[index_A] = trace_list->traces[index_B];
+    trace_list->traces[index_B] = trc_tmp;
+}
 /* The following codes are derived from the list operations by
  * Alistair Moffat, PPSAA, Chapter 10, December 2012
  * (c) University of Melbourne */
