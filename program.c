@@ -44,7 +44,8 @@
 
 /* #DEFINE'S -----------------------------------------------------------------*/
 #define GOOD_LUCK "GOOD LUCK CLASS!!!\n" // good luck message
-
+#define MAX_TRACE_NUM 1000
+#define TRACE_END 1
 /* TYPE DEFINITIONS ----------------------------------------------------------*/
 typedef unsigned int action_t; // an action is identified by an integer
 
@@ -70,6 +71,11 @@ typedef struct
     int cpct;      // the capacity of this event log as the number
                    //     of  distinct traces it can hold
 } log_t;
+typedef struct
+{
+    trace_t *trcs[MAX_TRACE_NUM]; // an array of traces
+    int num_tot_trace;            // the number of distinct traces in this log
+} trace_list_t;
 
 typedef action_t **DF_t; // a directly follows relation over actions
 
@@ -81,13 +87,12 @@ typedef struct
     int n_tot_traces; // the number of
 
 } trace_stats_t;
-#define MAX_TRACE_LEN 1000
-#define TRACE_END 1
 /* WHERE IT ALL HAPPENS ------------------------------------------------------*/
 // Function Definitions
-log_t *read_all_traces();
+trace_list_t *read_all_traces();
 int get_trace(trace_t *cur_trace);
-int sort_trace_log(log_t *trace_log);
+void add_new_trace(trace_list_t *trace_list, trace_t *cur_trace, int index);
+int sort_traces(trace_list_t *trace_list_t);
 int trace_compare(trace_t A, trace_t B);
 int trace_swap(trace_t *A, trace_t *B);
 trace_stats_t calc_stats();
@@ -106,7 +111,8 @@ int main(int argc, char *argv[])
 {
 
     // freopen("test0.txt", "r", stdin);
-    read_all_traces();
+
+    trace_list_t *trace_list = read_all_traces();
     return EXIT_SUCCESS; // remember, algorithms are fun!!!
 }
 /****************************************************************/
@@ -116,20 +122,20 @@ int main(int argc, char *argv[])
    sensible trailing punctuation is retained.
    argument array W must be limit+1 characters or bigger
 */
-log_t *read_all_traces()
+trace_list_t *read_all_traces()
 {
 
     // printf("reading:\n");
     int cur_code;
     trace_t *cur_trace = make_empty_list();
-    log_t *trace_log = (log_t *)malloc(sizeof(*trace_log));
+    trace_list_t *trace_list = (trace_list_t *)malloc(sizeof(*trace_list));
     while ((cur_code = get_trace(cur_trace)) == TRACE_END)
     {
         // check if it is the end of the trace
         print_trace(cur_trace);
         cur_trace = make_empty_list();
     }
-    return trace_log;
+    return trace_list;
 
     /* ok, first character of next word has been found */
 }
@@ -146,6 +152,13 @@ int get_trace(trace_t *cur_trace)
             return TRACE_END;
     }
     return EOF;
+}
+
+void add_new_trace(trace_list_t *trace_list, trace_t *cur_trace, int index)
+{
+    assert(cur_trace != NULL);
+    assert(trace_list != NULL);
+    trace_list->trcs[index] = cur_trace;
 }
 
 /* The following codes are derived from the list operations by
