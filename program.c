@@ -126,10 +126,8 @@ log_t *read_all_traces()
         // check if it is the end of the trace
         print_trace(cur_trace);
     }
-    if (cur_code == EOF)
-    {
-        return trace_log;
-    }
+    return trace_log;
+
     /* ok, first character of next word has been found */
 }
 int get_trace(trace_t *cur_trace)
@@ -145,6 +143,7 @@ int get_trace(trace_t *cur_trace)
         if (cur_char == '\n')
             return TRACE_END;
     }
+    cur_trace = new_trace;
     return EOF;
 }
 
