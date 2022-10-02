@@ -119,9 +119,8 @@ log_t *read_all_traces()
 
     // printf("reading:\n");
     int cur_code;
-    int new_line_count = 0;
     trace_t *cur_trace;
-    /* first, skip over any non alphanumerics */
+    log_t *trace_log;
     while ((cur_code = get_trace(cur_trace)) == TRACE_END)
     {
         // check if it is the end of the trace
@@ -129,7 +128,7 @@ log_t *read_all_traces()
     }
     if (cur_code == EOF)
     {
-        return EOF;
+        return trace_log;
     }
     /* ok, first character of next word has been found */
 }
@@ -146,8 +145,7 @@ int get_trace(trace_t *cur_trace)
         if (cur_char == '\n')
             return TRACE_END;
     }
-    if (cur_char == EOF)
-        return EOF;
+    return EOF;
 }
 
 /* The following codes are derived from the list operations by
