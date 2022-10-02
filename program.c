@@ -86,6 +86,7 @@ typedef struct
 /* WHERE IT ALL HAPPENS ------------------------------------------------------*/
 // Function Definitions
 log_t *read_all_traces();
+int get_trace(trace_t *cur_trace);
 int sort_trace_log(log_t *trace_log);
 int trace_compare(trace_t A, trace_t B);
 int trace_swap(trace_t *A, trace_t *B);
