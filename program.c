@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
     freopen("test0.txt", "r", stdin);
 
     trace_list_t *trace_list = read_all_traces();
-    sort_traces(trace_list);
+    // sort_traces(trace_list);
     for (int i = 0; i < trace_list->num_traces; i++)
     {
         print_trace(trace_list->traces[i]);
