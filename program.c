@@ -204,6 +204,7 @@ void sort_traces(trace_list_t *trace_list)
         }
     }
 }
+
 int trace_cmp(trace_t *trc_A, trace_t *trc_B)
 {
     assert(trc_A != NULL && trc_B != NULL);
