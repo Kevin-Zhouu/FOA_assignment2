@@ -105,7 +105,7 @@ void print_trace(trace_t *list);
 int main(int argc, char *argv[])
 {
 
-    freopen("test0.txt", "r", stdin);
+    // freopen("test0.txt", "r", stdin);
     read_all_traces();
     return EXIT_SUCCESS; // remember, algorithms are fun!!!
 }
@@ -121,8 +121,8 @@ log_t *read_all_traces()
 
     // printf("reading:\n");
     int cur_code;
-    trace_t *cur_trace;
-    log_t *trace_log;
+    trace_t *cur_trace = make_empty_list();
+    log_t *trace_log = (log_t *)malloc(sizeof(*trace_log));
     while ((cur_code = get_trace(cur_trace)) == TRACE_END)
     {
         // check if it is the end of the trace
@@ -134,19 +134,17 @@ log_t *read_all_traces()
 }
 int get_trace(trace_t *cur_trace)
 {
-    trace_t *new_trace = make_empty_list();
     char cur_char;
     while ((cur_char = getchar()) != EOF)
     {
         if (isalnum(cur_char))
         {
             printf("%c", cur_char);
-            insert_at_foot(new_trace, (action_t)cur_char);
+            insert_at_foot(cur_trace, (action_t)cur_char);
         }
         if (cur_char == '\n')
             return TRACE_END;
     }
-    cur_trace = new_trace;
     return EOF;
 }
 
