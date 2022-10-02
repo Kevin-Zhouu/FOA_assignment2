@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
         // print_trace(trace_list->traces[i]);
         free_list(trace_list->traces[i]);
     }
-    free(trace_list);
+    // free(trace_list);
     return EXIT_SUCCESS; // remember, algorithms are fun!!!
 }
 /****************************************************************/
