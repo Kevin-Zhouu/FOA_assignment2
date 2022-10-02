@@ -129,11 +129,12 @@ trace_list_t *read_all_traces()
     int cur_code;
     trace_t *cur_trace = make_empty_list();
     trace_list_t *trace_list = (trace_list_t *)malloc(sizeof(*trace_list));
+    int cur_trace_index = 0;
     while ((cur_code = get_trace(cur_trace)) == TRACE_END)
     {
         // check if it is the end of the trace
-        print_trace(cur_trace);
         cur_trace = make_empty_list();
+        add_new_trace(trace_list, cur_trace, cur_trace_index);
     }
     return trace_list;
 
