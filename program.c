@@ -193,8 +193,6 @@ void sort_traces(trace_list_t *trace_list)
     for (int i = 1; i < trace_list->num_traces; i++)
     {
         int j = i;
-        trace_t *tmp_trc = trace_list->traces[i];
-        trace_t *cur_trc = trace_list->traces[i];
         while (j > 0 &&
                (trace_cmp(trace_list->traces[j - 1],
                           trace_list->traces[j]) == CMP_LARGER))
@@ -298,7 +296,7 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
         trace_t *cur_trace = log.trcs[i];
         event_t *cur_event = cur_trace->head;
         // printf("looping:");
-        print_trace(cur_trace);
+        // print_trace(cur_trace);
         while (cur_event != NULL)
         {
             action_t cur_action = cur_event->actn;
