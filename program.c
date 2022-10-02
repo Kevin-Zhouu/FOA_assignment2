@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
     trace_list_t *trace_list = read_all_traces();
     for (int i = 0; i <= trace_list->num_traces; i++)
     {
-        print_all_trace(trace_list->traces[i]);
+        print_trace(trace_list->traces[i]);
     }
 
     return EXIT_SUCCESS; // remember, algorithms are fun!!!
