@@ -333,9 +333,7 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
     for (int i = 0; i < stats.num_max_freq_trcs; i++)
     {
         print_trace(stats.most_freq_trc[i]);
-        printf("\n");
     }
-    print_trace(stats.most_freq_trc);
     for (int i = 0; i < event_freq_index; i++)
     {
         printf("%c = %d\n", event_freq[i].action, event_freq[i].freq);
