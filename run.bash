@@ -1,4 +1,4 @@
-rm ./score_snippet
+rm ./program
 gcc -Wall -o program program.c
 ./program < test0.txt
 git add .
