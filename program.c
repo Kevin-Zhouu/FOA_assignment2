@@ -50,7 +50,7 @@
 #define CMP_SMALLER -1
 #define CMP_EQUAL 0
 /* TYPE DEFINITIONS ----------------------------------------------------------*/
-typedef unsigned int action_t; // an action is identified by an integer
+typedef unsigned char action_t; // an action is identified by an integer
 
 typedef struct event event_t; // an event ...
 struct event
@@ -109,17 +109,17 @@ trace_t *insert_at_foot(trace_t *list, action_t value);
 action_t get_head(trace_t *list);
 trace_t *get_tail(trace_t *list);
 void print_trace(trace_t *list);
-
+void print_all_trace(trace_list_t *trace_list);
 int main(int argc, char *argv[])
 {
 
     freopen("test0.txt", "r", stdin);
 
     trace_list_t *trace_list = read_all_traces();
-    // sort_traces(trace_list);
+    sort_traces(trace_list);
     for (int i = 0; i < trace_list->num_traces; i++)
     {
-        print_trace(trace_list->traces[i]);
+        // print_trace(trace_list->traces[i]);
         free_list(trace_list->traces[i]);
     }
     free(trace_list);
@@ -184,6 +184,7 @@ void sort_traces(trace_list_t *trace_list)
         {
             trace_swap(trace_list, j, j + 1);
             compare = trace_list->traces[j - 1];
+            print_all_trace(trace_list);
         }
         trace_list->traces[j] = key;
     }
@@ -325,4 +326,12 @@ void print_trace(trace_t *list)
         cur_event = cur_event->next;
     }
     printf("\n");
+}
+void print_all_trace(trace_list_t *trace_list)
+{
+    for (int i = 0; i < trace_list->num_traces; i++)
+    {
+        print_trace(trace_list->traces[i]);
+    }
+    printf("---------------------\n");
 }
