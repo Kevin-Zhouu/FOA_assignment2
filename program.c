@@ -104,6 +104,8 @@ void print_trace(trace_t *list);
 
 int main(int argc, char *argv[])
 {
+
+    freopen("test0.txt", "r", stdin);
     read_all_traces();
     return EXIT_SUCCESS; // remember, algorithms are fun!!!
 }
@@ -138,6 +140,7 @@ int get_trace(trace_t *cur_trace)
     {
         if (isalnum(cur_char))
         {
+            printf("%c", cur_char);
             insert_at_foot(new_trace, (action_t)cur_char);
         }
         if (cur_char == '\n')
