@@ -127,6 +127,7 @@ log_t *read_all_traces()
     {
         // check if it is the end of the trace
         print_trace(cur_trace);
+        cur_trace = make_empty_list();
     }
     return trace_log;
 
