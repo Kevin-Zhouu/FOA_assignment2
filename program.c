@@ -290,8 +290,11 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
         }
         if (cur_log_trace->freq == stats.max_freq)
         {
-            most_freq_trc_index++;
-            stats.most_freq_trc[most_freq_trc_index] = cur_trace;
+            if (stats.most_freq_trc[most_freq_trc_index] != cur_trace)
+            {
+                most_freq_trc_index++;
+                stats.most_freq_trc[most_freq_trc_index] = cur_trace;
+            }
         }
         log.ndtr = stats.n_dis_traces;
         prev_trace = cur_trace;
