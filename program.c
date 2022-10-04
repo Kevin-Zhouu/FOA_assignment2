@@ -337,6 +337,7 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
             cur_event = cur_event->next;
         }
     }
+    event_cmp(event_freq, event_freq + 1);
     qsort(event_freq, stats.n_dis_events, sizeof(*event_freq), event_cmp);
     stats.n_dis_events = event_freq_index;
     printf("==STAGE 0============================\n");
@@ -347,7 +348,7 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
     printf("Most frequent trace frequency: %d\n", stats.max_freq);
     for (int i = 0; i < stats.num_max_freq_trcs; i++)
     {
-        print_trace(stats.most_freq_trc[i]);
+        // print_trace(stats.most_freq_trc[i]);
     }
     for (int i = 0; i < event_freq_index; i++)
     {
