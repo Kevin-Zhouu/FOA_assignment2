@@ -240,7 +240,7 @@ int event_cmp(const void *A, const void *B)
     action_t letter_A = ((event_freq_t *)A)->action;
     action_t letter_B = ((event_freq_t *)B)->action;
     int result = letter_A - letter_B;
-    printf("comparing:%c %c", letter_A, letter_B);
+    printf("comparing:%c %c\nresult:", letter_A, letter_B, result);
     return result;
 };
 void trace_swap(trace_list_t *trace_list, int index_A, int index_B)
