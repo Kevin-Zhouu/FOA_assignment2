@@ -349,7 +349,7 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
     printf("Most frequent trace frequency: %d\n", stats.max_freq);
     for (int i = 0; i < stats.num_max_freq_trcs; i++)
     {
-        // print_trace(stats.most_freq_trc[i]);
+        print_trace(stats.most_freq_trc[i]);
     }
     for (int i = 0; i < event_freq_index; i++)
     {
