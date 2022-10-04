@@ -147,8 +147,10 @@ int main(int argc, char *argv[])
     free(trace_list);
     return EXIT_SUCCESS; // remember, algorithms are fun!!!
 }
-/****************************************************************/
-
+/***************************************************************
+this function reads all traces from stdin and stores them in heap,
+returning the pointer of type trace_list_t
+*/
 trace_list_t *read_all_traces()
 {
 
@@ -157,9 +159,11 @@ trace_list_t *read_all_traces()
     trace_t *cur_trace = make_empty_list();
     trace_list_t *trace_list = (trace_list_t *)malloc(sizeof(*trace_list));
     int cur_trace_index = 0;
-    while ((cur_code = get_trace(cur_trace)) && cur_trace_index <
-                                                    MAX_TRACE_NUM)
+    //
+    while (cur_trace_index <
+           MAX_TRACE_NUM)
     {
+        cur_code = get_trace(cur_trace);
         // check if it is the end of the trace
         add_new_trace(trace_list, cur_trace, cur_trace_index);
         cur_trace_index++;
@@ -169,8 +173,6 @@ trace_list_t *read_all_traces()
     }
     trace_list->num_traces = cur_trace_index;
     return trace_list;
-
-    /* ok, first character of next word has been found */
 }
 int get_trace(trace_t *cur_trace)
 {
