@@ -115,9 +115,9 @@ int is_event_exist(event_freq_t *event_freq_list, int n_events,
 int add_event_freq(event_freq_t *event_freq_list, int tot_events,
                    action_t action, int num_actn);
 int event_cmp(const void *A, const void *B);
-void print_stats(trace_stats_t trace_stats);
-// Linked list operations
-trace_t *make_empty_list(void);
+int print_stage1(trace_stats_t *stats)
+    // Linked list operations
+    trace_t *make_empty_list(void);
 int is_empty_list(trace_t *list);
 void free_list(trace_t *list);
 trace_t *insert_at_head(trace_t *list, action_t value);
