@@ -159,17 +159,17 @@ trace_list_t *read_all_traces()
     trace_t *cur_trace = make_empty_list();
     trace_list_t *trace_list = (trace_list_t *)malloc(sizeof(*trace_list));
     int cur_trace_index = 0;
-    //
-    while (cur_trace_index <
-           MAX_TRACE_NUM)
+    // get trace from stdin if number of trace exceeds maximum
+    while (cur_trace_index < MAX_TRACE_NUM)
     {
+        // save new trace to trace_list
         cur_code = get_trace(cur_trace);
-        // check if it is the end of the trace
         add_new_trace(trace_list, cur_trace, cur_trace_index);
         cur_trace_index++;
-        cur_trace = make_empty_list();
         if (cur_code == EOF)
-            break;
+            break; // reached end of file
+        // initialise empty linked list for next round
+        cur_trace = make_empty_list();
     }
     trace_list->num_traces = cur_trace_index;
     return trace_list;
