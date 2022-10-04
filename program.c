@@ -113,6 +113,7 @@ int is_event_exist(event_freq_t *event_freq_list, int n_events,
                    action_t action);
 int add_event_freq(event_freq_t *event_freq_list, int tot_events,
                    action_t action, int num_actn);
+int event_cmp(event_freq_t *A, event_freq_t *B);
 void print_stats(trace_stats_t trace_stats);
 // Linked list operations
 trace_t *make_empty_list(void);
@@ -233,6 +234,11 @@ int trace_cmp(trace_t *trc_A, trace_t *trc_B)
         return 1;
     return 0;
 }
+int event_cmp(event_freq_t *A, event_freq_t *B)
+{
+    assert(A != NULL && B != NULL);
+    return A->action - B->action;
+};
 void trace_swap(trace_list_t *trace_list, int index_A, int index_B)
 {
     assert(trace_list != NULL);
@@ -327,6 +333,7 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
             cur_event = cur_event->next;
         }
     }
+    qsort(event_freq, stats.n_dis_events, sizeof(event_freq_t), event_cmp);
     stats.n_dis_events = event_freq_index;
     printf("==STAGE 0============================\n");
     printf("Number of distinct events: %d\n", stats.n_dis_events);
