@@ -239,7 +239,7 @@ int event_cmp(const void *A, const void *B)
     assert(A != NULL && B != NULL);
     action_t letter_A = ((event_freq_t *)A)->action;
     action_t letter_B = ((event_freq_t *)B)->action;
-    int result = letter_A - letter_B;
+    int result = (int)letter_A - (int)letter_B;
     printf("comparing:%c %c\nresult:", letter_A, letter_B, result);
     return result;
 };
