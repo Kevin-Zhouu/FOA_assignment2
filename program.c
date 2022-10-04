@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
     sort_traces(trace_list);
 
     calc_stats(trace_list);
-    print_all_trace(trace_list);
+    // print_all_trace(trace_list);
     for (int i = 0; i < trace_list->num_traces; i++)
     {
         free_list(trace_list->traces[i]);
@@ -240,8 +240,6 @@ int event_cmp(const void *A, const void *B)
     action_t letter_A = ((event_freq_t *)A)->action;
     action_t letter_B = ((event_freq_t *)B)->action;
     int result = (int)letter_A - (int)letter_B;
-    printf("comparing:%c %c\nresult:%d\n", letter_A, letter_B, result);
-    printf("comparing:%d %d\nresult:%d", letter_A, letter_B, result);
     return result;
 };
 void trace_swap(trace_list_t *trace_list, int index_A, int index_B)
