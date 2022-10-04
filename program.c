@@ -109,7 +109,9 @@ void add_new_trace(trace_list_t *trace_list, trace_t *cur_trace, int index);
 void sort_traces(trace_list_t *trace_list_t);
 int trace_cmp(trace_t *A, trace_t *B);
 void trace_swap(trace_list_t *trace_list, int index_A, int index_B);
-trace_stats_t calc_stats(trace_list_t *trace_list);
+trace_stats_t calc_stg_1(trace_list_t *trace_list);
+trace_stats_t *calc_trc_stats(trace_stats_t *stats);
+trace_stats_t *calc_evt_stats(trace_stats_t *stats);
 int is_event_exist(event_freq_t *event_freq_list, int n_events,
                    action_t action);
 int add_event_freq(event_freq_t *event_freq_list, int tot_events,
@@ -134,7 +136,7 @@ int main(int argc, char *argv[])
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
 
-    calc_stats(trace_list);
+    calc_stg_1(trace_list);
     // print_all_trace(trace_list);
     for (int i = 0; i < trace_list->num_traces; i++)
     {
@@ -250,16 +252,16 @@ void trace_swap(trace_list_t *trace_list, int index_A, int index_B)
     trace_list->traces[index_A] = trace_list->traces[index_B];
     trace_list->traces[index_B] = trc_tmp;
 }
-trace_stats_t calc_stats(trace_list_t *trace_list)
+trace_stats_t calc_stg_1(trace_list_t *trace_list)
 {
     trace_stats_t stats = {0, 0, 0, 0, NULL, 0, 0, NULL};
     stats.n_traces = trace_list->num_traces;
     stats.most_freq_trc = (trace_t **)malloc(sizeof(trace_t *) *
                                              stats.n_traces);
-    log_t log = {};
-    log.trcs = (trace_t **)malloc(sizeof(trace_t *) * MAX_TRACE_NUM);
-    log.ndtr = 0;
-    log.cpct = MAX_TRACE_NUM;
+    log_t *log = (log_t *)malloc(sizeof(log_t));
+    log->trcs = (trace_t **)malloc(sizeof(trace_t *) * MAX_TRACE_NUM);
+    log->ndtr = 0;
+    log->cpct = MAX_TRACE_NUM;
     int log_index = 0;
     int most_freq_trc_index = 0;
     trace_t *prev_trace = trace_list->traces[0];
@@ -271,15 +273,15 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
         if (i == 0)
         {
             stats.n_dis_traces = 1;
-            log.trcs[0] = cur_trace;
-            cur_log_trace = log.trcs[0];
+            log->trcs[0] = cur_trace;
+            cur_log_trace = log->trcs[0];
         }
         int is_same = (trace_cmp(cur_trace, prev_trace) == 0);
         if (is_same != TRUE)
         {
             log_index++;
-            log.trcs[log_index] = cur_trace;
-            cur_log_trace = log.trcs[log_index];
+            log->trcs[log_index] = cur_trace;
+            cur_log_trace = log->trcs[log_index];
             stats.n_dis_traces += 1;
         }
         cur_log_trace->freq++;
@@ -298,17 +300,18 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
                 stats.most_freq_trc[most_freq_trc_index] = cur_trace;
             }
         }
-        log.ndtr = stats.n_dis_traces;
+        log->ndtr = stats.n_dis_traces;
         prev_trace = cur_trace;
     }
     stats.num_max_freq_trcs = most_freq_trc_index + 1;
+    stats.log = log;
     // Calculate distinct events
     event_freq_t *event_freq =
         (event_freq_t *)malloc(sizeof(event_freq_t) * stats.n_events);
     int event_freq_index = 0;
     for (int i = 0; i < stats.n_dis_traces; i++)
     {
-        trace_t *cur_trace = log.trcs[i];
+        trace_t *cur_trace = log->trcs[i];
         event_t *cur_event = cur_trace->head;
         while (cur_event != NULL)
         {
