@@ -242,9 +242,9 @@ int event_cmp(const void *A, const void *B)
     int result = (int)letter_A - (int)letter_B;
     printf("comparing:%c %c\nresult:%d\n", letter_A, letter_B, result);
     printf("comparing:%d %d\nresult:%d", letter_A, letter_B, result);
-    if (result < 0)
-        return -1;
     if (result > 0)
+        return -1;
+    if (result < 0)
         return 1;
     return 0;
 };
