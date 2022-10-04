@@ -326,7 +326,6 @@ trace_stats_t *calc_trc_stats(trace_stats_t *stats)
         // end of the loop, update prev_trace
         prev_trace = cur_trace;
     }
-
     log->ndtr = stats->n_dis_traces;
     stats->num_max_freq_trcs = most_freq_trc_index + 1;
     stats->log = log;
@@ -335,6 +334,7 @@ trace_stats_t *calc_trc_stats(trace_stats_t *stats)
 trace_stats_t *calc_evt_stats(trace_stats_t *stats)
 {
     // Calculate distinct events
+    // initialise event_freq array with maximum elements of total events
     event_freq_t *event_freq =
         (event_freq_t *)malloc(sizeof(event_freq_t) * stats->n_events);
     int event_freq_index = 0;
