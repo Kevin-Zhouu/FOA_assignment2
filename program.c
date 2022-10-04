@@ -332,8 +332,9 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
     event_cmp(event_freq, event_freq + 1);
 
     stats.n_dis_events = event_freq_index;
-    stats.most_freq_trc = event_freq;
     qsort(event_freq, stats.n_dis_events, sizeof(event_freq_t), event_cmp);
+
+    stats.event_freq = event_freq;
     // printf("size:%d", sizeof(event_freq_t));
     print_stage1(&stats);
 
