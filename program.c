@@ -345,8 +345,8 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
     event_cmp(event_freq, event_freq + 1);
 
     stats.n_dis_events = event_freq_index;
-    qsort(event_freq, stats.n_dis_events, sizeof(event_freq_t), 1);
-    printf("size:%d", sizeof(event_freq_t));
+    qsort(event_freq, stats.n_dis_events, sizeof(event_freq_t), event_cmp);
+    // printf("size:%d", sizeof(event_freq_t));
     printf("==STAGE 0============================\n");
     printf("Number of distinct events: %d\n", stats.n_dis_events);
     printf("Number of distinct traces: %d\n", stats.n_dis_traces);
