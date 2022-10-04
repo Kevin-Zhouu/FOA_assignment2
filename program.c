@@ -269,7 +269,9 @@ trace_stats_t calc_stg_1(trace_list_t *trace_list)
 }
 trace_stats_t *calc_trc_stats(trace_stats_t *stats)
 {
-    trace_list_t *trace_list = stats->trace_list;
+    assert(stats != NULL);
+    trace_list_t *trace_list = stats->trace_list; // an array of sorted trcs
+    // intialize log to store distinct traces
     log_t *log = (log_t *)malloc(sizeof(log_t));
     log->trcs = (trace_t **)malloc(sizeof(trace_t *) * MAX_TRACE_NUM);
     log->ndtr = 0;
@@ -278,43 +280,54 @@ trace_stats_t *calc_trc_stats(trace_stats_t *stats)
     int most_freq_trc_index = 0;
     trace_t *prev_trace = trace_list->traces[0];
     trace_t *cur_log_trace;
-    // calculate distinct traces
+    // go throught the sorted trace list
     for (int i = 0; i < trace_list->num_traces; i++)
     {
         trace_t *cur_trace = trace_list->traces[i];
+        // initialise variables when i=0
         if (i == 0)
         {
             stats->n_dis_traces = 1;
             log->trcs[0] = cur_trace;
             cur_log_trace = log->trcs[0];
         }
+        // determine whether current trace is same as previous trace
         int is_same = (trace_cmp(cur_trace, prev_trace) == 0);
         if (is_same != TRUE)
         {
+            // if not same, add to log
             log_index++;
             log->trcs[log_index] = cur_trace;
             cur_log_trace = log->trcs[log_index];
             stats->n_dis_traces += 1;
         }
+        // update stats
         cur_log_trace->freq++;
         stats->n_events += cur_trace->len;
+        // check if current trace is most frequent
         if (cur_log_trace->freq > stats->max_freq)
         {
+            // it is most frequent, update stats
             stats->max_freq = cur_log_trace->freq;
             most_freq_trc_index = 0;
             stats->most_freq_trc[most_freq_trc_index] = cur_trace;
         }
+        // check if current trace has same frequency as max frequency
         if (cur_log_trace->freq == stats->max_freq)
         {
+            // check if current trace is already in most_freq_trc array
             if (stats->most_freq_trc[most_freq_trc_index] != cur_trace)
             {
+                // add current trace to most_freq_trc array
                 most_freq_trc_index++;
                 stats->most_freq_trc[most_freq_trc_index] = cur_trace;
             }
         }
-        log->ndtr = stats->n_dis_traces;
+        // end of the loop, update prev_trace
         prev_trace = cur_trace;
     }
+
+    log->ndtr = stats->n_dis_traces;
     stats->num_max_freq_trcs = most_freq_trc_index + 1;
     stats->log = log;
     return stats;
