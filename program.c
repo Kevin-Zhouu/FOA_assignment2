@@ -85,22 +85,10 @@ typedef struct
 } trace_list_t;
 typedef struct
 {
-    event_node_t *node; // the node of the event
-    int (*cmp)(void *, void *);
-} event_tree_t;
-typedef struct
-{
-    event_data_t *data; // an array of traces
-    event_node_t *left;
-    event_node_t *right;
-} event_node_t;
-typedef struct
-{
     action_t action;
     int freq;
-} event_data_t;
+} event_freq_t;
 typedef action_t **DF_t; // a directly follows relation over actions
-
 typedef struct
 {
     int n_dis_events; // the number of distinct events
@@ -112,7 +100,6 @@ typedef struct
     int num_max_freq_trcs;
     log_t *trace_log;
 } trace_stats_t;
-
 /* WHERE IT ALL HAPPENS ------------------------------------------------------*/
 // Function Definitions
 trace_list_t *read_all_traces();
@@ -122,11 +109,10 @@ void sort_traces(trace_list_t *trace_list_t);
 int trace_cmp(trace_t *A, trace_t *B);
 void trace_swap(trace_list_t *trace_list, int index_A, int index_B);
 trace_stats_t calc_stats(trace_list_t *trace_list);
-event_tree_t *get_event_tree(log_t *log);
-// int is_event_exist(event_freq_t *event_freq_list, int n_events,
-//                    action_t action);
-// int add_event_freq(event_freq_t *event_freq_list, int tot_events,
-//                    action_t action, int num_actn);
+int is_event_exist(event_freq_t *event_freq_list, int n_events,
+                   action_t action);
+int add_event_freq(event_freq_t *event_freq_list, int tot_events,
+                   action_t action, int num_actn);
 void print_stats(trace_stats_t trace_stats);
 // Linked list operations
 trace_t *make_empty_list(void);
@@ -311,12 +297,12 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
                 stats.most_freq_trc[most_freq_trc_index] = cur_trace;
             }
         }
+        log.ndtr = stats.n_dis_traces;
         prev_trace = cur_trace;
     }
-    log.ndtr = stats.n_dis_traces;
     stats.num_max_freq_trcs = most_freq_trc_index + 1;
     // Calculate distinct events
-    // event_freq_t event_freq[MAX_EVENT_NUM];
+    event_freq_t event_freq[MAX_EVENT_NUM];
     int event_freq_index = 0;
     for (int i = 0; i < stats.n_dis_traces; i++)
     {
@@ -359,36 +345,33 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
 
     return stats;
 }
-event_tree_t *get_event_tree(log_t *log)
+int is_event_exist(event_freq_t *event_freq_list, int tot_events,
+                   action_t action)
 {
+    for (int i = 0; i < tot_events; i++)
+    {
+        if (event_freq_list[i].action == action)
+            return TRUE;
+    }
+    return FALSE;
 }
-// int is_event_exist(event_freq_t *event_freq_list, int tot_events,
-//                    action_t action)
-// {
-//     for (int i = 0; i < tot_events; i++)
-//     {
-//         if (event_freq_list[i].action == action)
-//             return TRUE;
-//     }
-//     return FALSE;
-// }
-// int add_event_freq(event_freq_t *event_freq_list, int tot_events,
-//                    action_t action, int num_actn)
-// {
-//     assert(event_freq_list != NULL);
-//     for (int i = 0; i < tot_events; i++)
-//     {
-//         if (event_freq_list[i].action == action)
-//         {
-//             event_freq_list[i].freq += num_actn;
-//             return TRUE;
-//         }
-//     }
-//     // not in the array, add to the last element
-//     event_freq_list[tot_events].action = action;
-//     event_freq_list[tot_events].freq = num_actn;
-//     return FALSE;
-// }
+int add_event_freq(event_freq_t *event_freq_list, int tot_events,
+                   action_t action, int num_actn)
+{
+    assert(event_freq_list != NULL);
+    for (int i = 0; i < tot_events; i++)
+    {
+        if (event_freq_list[i].action == action)
+        {
+            event_freq_list[i].freq += num_actn;
+            return TRUE;
+        }
+    }
+    // not in the array, add to the last element
+    event_freq_list[tot_events].action = action;
+    event_freq_list[tot_events].freq = num_actn;
+    return FALSE;
+}
 /* The following codes are derived from the list operations by
  * Alistair Moffat, PPSAA, Chapter 10, December 2012
  * (c) University of Melbourne */
