@@ -237,7 +237,10 @@ int trace_cmp(trace_t *trc_A, trace_t *trc_B)
 int event_cmp(const void *A, const void *B)
 {
     assert(A != NULL && B != NULL);
-    int result = (int)((event_freq_t *)A)->action - ((event_freq_t *)B)->action;
+    action_t letter_A = ((event_freq_t *)A)->action;
+    action_t letter_B = ((event_freq_t *)B)->action;
+    int result = letter_A - letter_B;
+    printf("comparing:%c %c", letter_A, letter_B);
     return result;
 };
 void trace_swap(trace_list_t *trace_list, int index_A, int index_B)
