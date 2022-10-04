@@ -174,17 +174,25 @@ trace_list_t *read_all_traces()
     trace_list->num_traces = cur_trace_index;
     return trace_list;
 }
+/***************************************************************
+this function reads all characters from stdin and add the trace to 'cur_trace'
+return TRACE_END if trace is found
+return EOF if reached end of file
+*/
 int get_trace(trace_t *cur_trace)
 {
     char cur_char;
+    // check if reached end of file
     while ((cur_char = getchar()) != EOF)
     {
+        // skip all non-alphanumeric characters
         if (isalnum(cur_char))
         {
+            // found a character, add to trace
             insert_at_foot(cur_trace, (action_t)cur_char);
         }
         if (cur_char == '\n')
-            return TRACE_END;
+            return TRACE_END; // end of trace found
     }
     return EOF;
 }
