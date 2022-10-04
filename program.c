@@ -305,13 +305,21 @@ trace_stats_t calc_stg_1(trace_list_t *trace_list)
     }
     stats.num_max_freq_trcs = most_freq_trc_index + 1;
     stats.log = log;
+    calc_evt_stats(&stats);
+    // printf("size:%d", sizeof(event_freq_t));
+    print_stage1(&stats);
+
+    return stats;
+}
+trace_stats_t *calc_evt_stats(trace_stats_t *stats)
+{
     // Calculate distinct events
     event_freq_t *event_freq =
-        (event_freq_t *)malloc(sizeof(event_freq_t) * stats.n_events);
+        (event_freq_t *)malloc(sizeof(event_freq_t) * stats->n_events);
     int event_freq_index = 0;
-    for (int i = 0; i < stats.n_dis_traces; i++)
+    for (int i = 0; i < stats->n_dis_traces; i++)
     {
-        trace_t *cur_trace = log->trcs[i];
+        trace_t *cur_trace = stats->log->trcs[i];
         event_t *cur_event = cur_trace->head;
         while (cur_event != NULL)
         {
@@ -319,8 +327,8 @@ trace_stats_t calc_stg_1(trace_list_t *trace_list)
             if (is_event_exist(event_freq, event_freq_index + 1,
                                cur_action) == FALSE)
             {
-                event_freq[event_freq_index].action = cur_action;
-                event_freq[event_freq_index].freq = cur_trace->freq;
+                (event_freq + event_freq_index)->action = cur_action;
+                (event_freq + event_freq_index)->freq = cur_trace->freq;
                 event_freq_index++;
             }
             else
@@ -333,14 +341,9 @@ trace_stats_t calc_stg_1(trace_list_t *trace_list)
         }
     }
     event_cmp(event_freq, event_freq + 1);
-
-    stats.n_dis_events = event_freq_index;
-    qsort(event_freq, stats.n_dis_events, sizeof(event_freq_t), event_cmp);
-
-    stats.event_freq = event_freq;
-    // printf("size:%d", sizeof(event_freq_t));
-    print_stage1(&stats);
-
+    stats->n_dis_events = event_freq_index;
+    qsort(event_freq, stats->n_dis_events, sizeof(event_freq_t), event_cmp);
+    stats->event_freq = event_freq;
     return stats;
 }
 void print_stage1(trace_stats_t *stats)
