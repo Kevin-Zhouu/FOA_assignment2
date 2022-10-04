@@ -95,6 +95,7 @@ typedef struct
     int n_dis_traces; // the number of distinct
     int n_events;     // the number of
     int n_traces;     // the number of
+    trace_list_t *trace_list;
     trace_t **most_freq_trc;
     int max_freq;
     int num_max_freq_trcs;
@@ -258,13 +259,24 @@ trace_stats_t calc_stg_1(trace_list_t *trace_list)
     stats.n_traces = trace_list->num_traces;
     stats.most_freq_trc = (trace_t **)malloc(sizeof(trace_t *) *
                                              stats.n_traces);
+    stats.trace_list = trace_list;
+    calc_trc_stats(&stats);
+    calc_evt_stats(&stats);
+    // printf("size:%d", sizeof(event_freq_t));
+    print_stage1(&stats);
+
+    return stats;
+}
+trace_stats_t *calc_trc_stats(trace_stats_t *stats)
+{
+    trace_list_t *trace_list = stats->trace_list;
     log_t *log = (log_t *)malloc(sizeof(log_t));
     log->trcs = (trace_t **)malloc(sizeof(trace_t *) * MAX_TRACE_NUM);
     log->ndtr = 0;
     log->cpct = MAX_TRACE_NUM;
     int log_index = 0;
     int most_freq_trc_index = 0;
-    trace_t *prev_trace = trace_list->traces[0];
+    trace_t *prev_trace = stats->trace_list->traces;
     trace_t *cur_log_trace;
     // calculate distinct traces
     for (int i = 0; i < trace_list->num_traces; i++)
@@ -272,7 +284,7 @@ trace_stats_t calc_stg_1(trace_list_t *trace_list)
         trace_t *cur_trace = trace_list->traces[i];
         if (i == 0)
         {
-            stats.n_dis_traces = 1;
+            stats->n_dis_traces = 1;
             log->trcs[0] = cur_trace;
             cur_log_trace = log->trcs[0];
         }
@@ -282,33 +294,29 @@ trace_stats_t calc_stg_1(trace_list_t *trace_list)
             log_index++;
             log->trcs[log_index] = cur_trace;
             cur_log_trace = log->trcs[log_index];
-            stats.n_dis_traces += 1;
+            stats->n_dis_traces += 1;
         }
         cur_log_trace->freq++;
-        stats.n_events += cur_trace->len;
-        if (cur_log_trace->freq > stats.max_freq)
+        stats->n_events += cur_trace->len;
+        if (cur_log_trace->freq > stats->max_freq)
         {
-            stats.max_freq = cur_log_trace->freq;
+            stats->max_freq = cur_log_trace->freq;
             most_freq_trc_index = 0;
-            stats.most_freq_trc[most_freq_trc_index] = cur_trace;
+            stats->most_freq_trc[most_freq_trc_index] = cur_trace;
         }
-        if (cur_log_trace->freq == stats.max_freq)
+        if (cur_log_trace->freq == stats->max_freq)
         {
-            if (stats.most_freq_trc[most_freq_trc_index] != cur_trace)
+            if (stats->most_freq_trc[most_freq_trc_index] != cur_trace)
             {
                 most_freq_trc_index++;
-                stats.most_freq_trc[most_freq_trc_index] = cur_trace;
+                stats->most_freq_trc[most_freq_trc_index] = cur_trace;
             }
         }
-        log->ndtr = stats.n_dis_traces;
+        log->ndtr = stats->n_dis_traces;
         prev_trace = cur_trace;
     }
-    stats.num_max_freq_trcs = most_freq_trc_index + 1;
-    stats.log = log;
-    calc_evt_stats(&stats);
-    // printf("size:%d", sizeof(event_freq_t));
-    print_stage1(&stats);
-
+    stats->num_max_freq_trcs = most_freq_trc_index + 1;
+    stats->log = log;
     return stats;
 }
 trace_stats_t *calc_evt_stats(trace_stats_t *stats)
