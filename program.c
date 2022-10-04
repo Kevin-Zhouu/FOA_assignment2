@@ -334,7 +334,7 @@ trace_stats_t calc_stats(trace_list_t *trace_list)
             cur_event = cur_event->next;
         }
     }
-    qsort(event_freq, stats.n_dis_events, sizeof(event_freq_t), event_cmp);
+    // qsort(event_freq, stats.n_dis_events, sizeof(event_freq_t), event_cmp);
     stats.n_dis_events = event_freq_index;
     printf("==STAGE 0============================\n");
     printf("Number of distinct events: %d\n", stats.n_dis_events);
