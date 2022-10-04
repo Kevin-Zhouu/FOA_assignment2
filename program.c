@@ -255,7 +255,7 @@ void trace_swap(trace_list_t *trace_list, int index_A, int index_B)
 }
 trace_stats_t calc_stg_1(trace_list_t *trace_list)
 {
-    trace_stats_t stats = {0, 0, 0, 0, NULL, 0, 0, NULL};
+    trace_stats_t stats = {0, 0, 0, 0, NULL, NULL, 0, 0, NULL};
     stats.n_traces = trace_list->num_traces;
     stats.most_freq_trc = (trace_t **)malloc(sizeof(trace_t *) *
                                              stats.n_traces);
@@ -276,7 +276,7 @@ trace_stats_t *calc_trc_stats(trace_stats_t *stats)
     log->cpct = MAX_TRACE_NUM;
     int log_index = 0;
     int most_freq_trc_index = 0;
-    trace_t *prev_trace = stats->trace_list->traces;
+    trace_t *prev_trace = trace_list->traces[0];
     trace_t *cur_log_trace;
     // calculate distinct traces
     for (int i = 0; i < trace_list->num_traces; i++)
