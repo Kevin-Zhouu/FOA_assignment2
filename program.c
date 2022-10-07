@@ -499,7 +499,7 @@ sup_matrix_t *generate_seq_matrix(log_t *log, trace_stats_t *stats)
             cur_event = cur_event->next;
         }
     }
-    row_index++;
+    // row_index++;
     sup_matrix->rows = (action_t *)realloc(sup_matrix->rows,
                                            sizeof(action_t) * row_index);
     sup_matrix->columns = (action_t *)realloc(sup_matrix->columns,
