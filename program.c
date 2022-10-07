@@ -80,8 +80,8 @@ typedef struct
 } log_t;
 typedef struct
 {
-    trace_t *traces[MAX_TRACE_NUM]; // an array of traces
-    int num_traces;                 // the number of traces in this log
+    trace_t **traces; // an array of traces
+    int num_traces;   // the number of traces in this log
 } trace_list_t;
 typedef struct
 {
@@ -245,6 +245,14 @@ void add_new_trace(trace_list_t *trace_list, trace_t *cur_trace, int index)
 {
     assert(cur_trace != NULL);
     assert(trace_list != NULL);
+    if (index == 0)
+    {
+        trace_list->traces = (trace_t **)malloc(sizeof(trace_t *));
+    }
+    else
+    {
+        trace_list->traces = (trace_t **)realloc(trace_list->traces, index + 1);
+    }
     trace_list->traces[index] = cur_trace;
 }
 void sort_traces(trace_list_t *trace_list)
@@ -467,7 +475,7 @@ int add_event_freq(event_freq_t *event_freq_list, int tot_events,
 }
 void calc_stg_1(trace_stats_t *stats)
 {
-    sup_matrix_t *sup_matrix = generate_seq_matrix(stats->log, stats);
+    sup_matrix_t *sup_matrix = generate_seq_matrix(stats->trace_list, stats);
     print_matrix(sup_matrix);
     // candidate_list_t *can_list = find_potential_seq(sup_matrix);
     // del_seq(stats, can_list, sup_matrix);
@@ -518,15 +526,13 @@ sup_matrix_t *generate_seq_matrix(log_t *log, trace_stats_t *stats)
                                          sup_matrix->rows, row_index);
             int y_index = find_row_index(cur_event->actn,
                                          sup_matrix->columns, row_index);
-            sup_matrix->values[x_index][y_index] += 1;
+            sup_matrix->values[x_index][y_index] += cur_trace->freq *;
             prev_event = cur_event;
             cur_event = cur_event->next;
         }
     }
     sup_matrix->n_rows = row_index;
     sup_matrix->n_columns = row_index;
-
-    print_matrix(sup_matrix);
     return sup_matrix;
 }
 void print_matrix(sup_matrix_t *sup_matrix)
