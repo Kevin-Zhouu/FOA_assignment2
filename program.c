@@ -247,11 +247,11 @@ void add_new_trace(trace_list_t *trace_list, trace_t *cur_trace, int index)
     assert(trace_list != NULL);
     if (index == 0)
     {
-        trace_list->traces = (trace_t **)malloc(sizeof(trace_t *) + 1);
+        trace_list->traces = (trace_t **)malloc(sizeof(trace_t *));
     }
     else
     {
-        trace_list->traces = (trace_t **)realloc(trace_list->traces, index + 1);
+        trace_list->traces = (trace_t **)realloc(trace_list->traces, sizeof(trace_t *) * (index + 1));
     }
     trace_list->traces[index] = cur_trace;
 }
