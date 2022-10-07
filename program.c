@@ -52,6 +52,8 @@
 #define CMP_EQUAL 0
 #define TRUE 1
 #define FALSE 0
+#define DECIMAL_TO_PERCENT 100
+#define WEIGHT_C 50
 /* TYPE DEFINITIONS ----------------------------------------------------------*/
 typedef unsigned char action_t; // an action is identified by an integer
 
@@ -159,7 +161,8 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix);
 stg2_stats_t *del_seq(trace_stats_t *stats, candidate_list_t *can_list,
                       sup_matrix_t *sup_matrix);
 void print_matrix(sup_matrix_t *sup_matrix);
-
+int calc_pd(sup_t *xy, sup_t *yx);
+int calc_w(sup_t *xy, sup_t *yx, int pd);
 int find_row_index(action_t action, action_t *rows, int total_tows);
 void print_stg2(stg2_stats_t *);
 // Linked list operations
@@ -172,10 +175,11 @@ action_t get_head(trace_t *list);
 trace_t *get_tail(trace_t *list);
 void print_trace(trace_t *list);
 void print_all_trace(trace_list_t *trace_list);
+int max(int x, int y);
 int main(int argc, char *argv[])
 {
 
-    freopen("test0.txt", "r", stdin);
+    // freopen("test0.txt", "r", stdin);
 
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
@@ -251,7 +255,8 @@ void add_new_trace(trace_list_t *trace_list, trace_t *cur_trace, int index)
     }
     else
     {
-        trace_list->traces = (trace_t **)realloc(trace_list->traces, sizeof(trace_t *) * (index + 1));
+        trace_list->traces = (trace_t **)realloc(
+            trace_list->traces, sizeof(trace_t *) * (index + 1));
     }
     trace_list->traces[index] = cur_trace;
 }
@@ -477,8 +482,8 @@ void calc_stg_1(trace_stats_t *stats)
 {
     sup_matrix_t *sup_matrix = generate_seq_matrix(stats->trace_list, stats);
     print_matrix(sup_matrix);
-    // candidate_list_t *can_list = find_potential_seq(sup_matrix);
-    // del_seq(stats, can_list, sup_matrix);
+    candidate_list_t *can_list = find_potential_seq(sup_matrix);
+    //  del_seq(stats, can_list, sup_matrix);
 }
 sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats)
 {
@@ -537,18 +542,18 @@ sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats)
 void print_matrix(sup_matrix_t *sup_matrix)
 {
     printf("==STAGE 1============================\n");
-    printf("      ");
+    printf("     ");
     for (int i = 0; i < sup_matrix->n_rows; i++)
     {
-        printf("%6c", sup_matrix->rows[i]);
+        printf("%5c", sup_matrix->rows[i]);
     }
     printf("\n");
     for (int i = 0; i < sup_matrix->n_rows; i++)
     {
-        printf("%6c", sup_matrix->rows[i]);
+        printf("%5c", sup_matrix->rows[i]);
         for (int j = 0; j < sup_matrix->n_columns; j++)
         {
-            printf("%6d", sup_matrix->values[i][j]);
+            printf("%5d", sup_matrix->values[i][j]);
         }
         printf("\n");
     }
@@ -576,7 +581,38 @@ int find_row_index(action_t action, action_t *rows, int total_tows)
     }
     return -1;
 }
-candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix);
+candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
+{
+    candidate_list_t *can_list = (candidate_list_t *)malloc(
+        sizeof(candidate_list_t));
+    int n_rows = sup_matrix->n_rows;
+    // looping over the rows
+    for (int i = 0; i < n_rows; i++)
+    {
+        // looping over the columns
+        for (int j = 0; j < n_rows; j++)
+        {
+            sup_t xy = {sup_matrix->rows[i], sup_matrix->rows[j],
+                        sup_matrix->values[i][j]};
+            sup_t yx = {sup_matrix->rows[j], sup_matrix->rows[i],
+                        sup_matrix->values[j][i]};
+            int pd = calc_pd(&xy, &yx);
+            int w = calc_w(&xy, &yx, pd);
+            printf("seq(%c,%c) pd=%d w=%d\n", xy.x, xy.y, pd, w);
+        }
+    }
+}
+int calc_pd(sup_t *xy, sup_t *yx)
+{
+    int result = DECIMAL_TO_PERCENT * (abs(xy->freq - yx->freq)) /
+                 max(xy->freq, yx->freq);
+    return result;
+}
+
+int calc_w(sup_t *xy, sup_t *yx, int pd)
+{
+    int result = abs(WEIGHT_C - pd) * max(xy->freq, yx->freq);
+}
 stg2_stats_t *del_seq(trace_stats_t *stats, candidate_list_t *can_list,
                       sup_matrix_t *sup_matrix);
 void print_stg2(stg2_stats_t *);
@@ -695,4 +731,14 @@ void print_all_trace(trace_list_t *trace_list)
         print_trace(trace_list->traces[i]);
     }
     printf("---------------------\n");
+}
+
+// Operations for maths
+int max(int x, int y)
+{
+    if (x - y >= 0)
+    {
+        return x;
+    }
+    return y;
 }
