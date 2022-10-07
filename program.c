@@ -534,6 +534,7 @@ void print_matrix(sup_matrix_t *sup_matrix)
     {
         printf("%c ", sup_matrix->rows[i]);
     }
+    printf("\n");
     for (int i = 0; i < sup_matrix->n_rows; i++)
     {
         printf("%c ", sup_matrix->rows[i]);
