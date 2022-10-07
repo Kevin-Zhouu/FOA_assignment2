@@ -521,7 +521,6 @@ sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats)
 
         while (cur_event != NULL)
         {
-            action_t cur_action = cur_event->actn;
             int x_index = find_row_index(prev_event->actn,
                                          sup_matrix->rows, row_index);
             int y_index = find_row_index(cur_event->actn,
@@ -537,6 +536,7 @@ sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats)
 }
 void print_matrix(sup_matrix_t *sup_matrix)
 {
+    printf("==STAGE 1============================\n");
     printf("      ");
     for (int i = 0; i < sup_matrix->n_rows; i++)
     {
