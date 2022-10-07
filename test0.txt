@@ -13,4 +13,3 @@ a,b,e,f
 a,b,f,e
 a,b,c,d
 a,b,e,f
-b,a
