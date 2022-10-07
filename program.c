@@ -530,17 +530,18 @@ sup_matrix_t *generate_seq_matrix(log_t *log, trace_stats_t *stats)
 }
 void print_matrix(sup_matrix_t *sup_matrix)
 {
+    printf("      ");
     for (int i = 0; i < sup_matrix->n_rows; i++)
     {
-        printf("%c ", sup_matrix->rows[i]);
+        printf("%-6c", sup_matrix->rows[i]);
     }
     printf("\n");
     for (int i = 0; i < sup_matrix->n_rows; i++)
     {
-        printf("%c ", sup_matrix->rows[i]);
+        printf("%-6c", sup_matrix->rows[i]);
         for (int j = 0; j < sup_matrix->n_columns; j++)
         {
-            printf("%d ", sup_matrix->values[i][j]);
+            printf("%-6d ", sup_matrix->values[i][j]);
         }
         printf("\n");
     }
