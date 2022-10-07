@@ -102,6 +102,38 @@ typedef struct
     event_freq_t *event_freq;
     log_t *log;
 } trace_stats_t;
+typedef struct
+{
+    action_t x;
+    action_t y;
+    int freq;
+} sup_t;
+typedef struct
+{
+    int **values;      // two dimensional array of int
+    action_t *rows;    // action for corresponidng rows
+    action_t *columns; // action for corresponding columns
+    int n_rows;        // number of rows
+    int n_columns;     // number of columns
+} sup_matrix_t;
+typedef struct
+{
+    sup_t *sup;
+    int pd;
+    int w;
+} candidate_t;
+typedef struct
+{
+    candidate_t *candidates;
+    int num;
+} candidate_list_t;
+typedef struct
+{
+    sup_t seq;
+    action_t code;
+    sup_matrix_t *sup_matrix;
+} stg2_stats_t;
+
 /* WHERE IT ALL HAPPENS ------------------------------------------------------*/
 // Function Definitions
 trace_list_t *read_all_traces();
@@ -110,7 +142,7 @@ void add_new_trace(trace_list_t *trace_list, trace_t *cur_trace, int index);
 void sort_traces(trace_list_t *trace_list_t);
 int trace_cmp(trace_t *A, trace_t *B);
 void trace_swap(trace_list_t *trace_list, int index_A, int index_B);
-trace_stats_t calc_stg_1(trace_list_t *trace_list);
+trace_stats_t calc_stg_0(trace_list_t *trace_list);
 trace_stats_t *calc_trc_stats(trace_stats_t *stats);
 trace_stats_t *calc_evt_stats(trace_stats_t *stats);
 int is_event_exist(event_freq_t *event_freq_list, int n_events,
@@ -118,7 +150,18 @@ int is_event_exist(event_freq_t *event_freq_list, int n_events,
 int add_event_freq(event_freq_t *event_freq_list, int tot_events,
                    action_t action, int num_actn);
 int event_cmp(const void *A, const void *B);
-void print_stage1(trace_stats_t *stats);
+void print_stg_0(trace_stats_t *stats);
+
+void calc_stg_1(trace_stats_t *stats);
+int **init_matrix(int rows, int columns);
+sup_matrix_t *generate_seq_matrix(log_t *log, trace_stats_t *);
+candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix);
+stg2_stats_t *del_seq(trace_stats_t *stats, candidate_list_t *can_list,
+                      sup_matrix_t *sup_matrix);
+void print_matrix(sup_matrix_t *sup_matrix);
+
+int find_row_index(action_t action, action_t *rows, int total_tows);
+void print_stg2(stg2_stats_t *);
 // Linked list operations
 trace_t *make_empty_list(void);
 int is_empty_list(trace_t *list);
@@ -137,6 +180,7 @@ int main(int argc, char *argv[])
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
 
+    calc_stg_0(trace_list);
     calc_stg_1(trace_list);
     // print_all_trace(trace_list);
     for (int i = 0; i < trace_list->num_traces; i++)
@@ -263,7 +307,7 @@ void trace_swap(trace_list_t *trace_list, int index_A, int index_B)
     trace_list->traces[index_A] = trace_list->traces[index_B];
     trace_list->traces[index_B] = trc_tmp;
 }
-trace_stats_t calc_stg_1(trace_list_t *trace_list)
+trace_stats_t calc_stg_0(trace_list_t *trace_list)
 {
     trace_stats_t stats = {0, 0, 0, 0, NULL, NULL, 0, 0, NULL};
     stats.n_traces = trace_list->num_traces;
@@ -272,8 +316,7 @@ trace_stats_t calc_stg_1(trace_list_t *trace_list)
     stats.trace_list = trace_list;
     calc_trc_stats(&stats);
     calc_evt_stats(&stats);
-    // printf("size:%d", sizeof(event_freq_t));
-    print_stage1(&stats);
+    print_stg_0(&stats);
 
     return stats;
 }
@@ -377,7 +420,7 @@ trace_stats_t *calc_evt_stats(trace_stats_t *stats)
     stats->event_freq = event_freq;
     return stats;
 }
-void print_stage1(trace_stats_t *stats)
+void print_stg_0(trace_stats_t *stats)
 {
     printf("==STAGE 0============================\n");
     printf("Number of distinct events: %d\n", stats->n_dis_events);
@@ -422,6 +465,108 @@ int add_event_freq(event_freq_t *event_freq_list, int tot_events,
     event_freq_list[tot_events].freq = num_actn;
     return FALSE;
 }
+void calc_stg_1(trace_stats_t *stats)
+{
+    sup_matrix_t *sup_matrix = generate_seq_matrix(stats->log, stats);
+    print_matrix(sup_matrix);
+    // candidate_list_t *can_list = find_potential_seq(sup_matrix);
+    // del_seq(stats, can_list, sup_matrix);
+}
+sup_matrix_t *generate_seq_matrix(log_t *log, trace_stats_t *stats)
+{
+
+    sup_matrix_t *sup_matrix = (sup_matrix_t *)malloc(sizeof(*sup_matrix));
+    sup_matrix->rows = (action_t *)malloc(sizeof(action_t) *
+                                          stats->n_dis_events);
+    sup_matrix->columns = (action_t *)malloc(sizeof(action_t) *
+                                             stats->n_dis_events);
+    int row_index = 0;
+    // find all rows and columns
+    for (int i = 0; i < log->ndtr; i++)
+    {
+        trace_t *cur_trace = log->trcs[i];
+        event_t *cur_event = cur_trace->head;
+
+        while (cur_event != NULL)
+        {
+            action_t cur_action = cur_event->actn;
+            if (is_event_exist(sup_matrix->rows, row_index + 1,
+                               cur_action) == FALSE)
+            {
+                sup_matrix->rows[row_index] = cur_action;
+                sup_matrix->columns[row_index] = cur_action;
+                row_index++;
+            }
+            cur_event = cur_event->next;
+        }
+    }
+    row_index++;
+    sup_matrix->rows = (action_t *)realloc(sup_matrix->rows,
+                                           sizeof(action_t) * row_index);
+    sup_matrix->columns = (action_t *)realloc(sup_matrix->columns,
+                                              sizeof(action_t) * row_index);
+    sup_matrix->values = init_matrix(row_index, row_index);
+    for (int i = 0; i < log->ndtr; i++)
+    {
+        trace_t *cur_trace = log->trcs[i];
+
+        event_t *prev_event = cur_trace->head;
+        event_t *cur_event = cur_trace->head->next;
+
+        while (cur_event != NULL)
+        {
+            action_t cur_action = cur_event->actn;
+            int x_index = find_row_index(prev_event->actn,
+                                         sup_matrix->rows, row_index);
+            int y_index = find_row_index(cur_event->actn,
+                                         sup_matrix->rows, row_index);
+            sup_matrix->values[x_index][y_index];
+            prev_event = cur_event;
+            cur_event = cur_event->next;
+        }
+    }
+    sup_matrix->n_rows = row_index;
+    sup_matrix->n_columns = row_index;
+    return sup_matrix;
+}
+void print_matrix(sup_matrix_t *sup_matrix)
+{
+    for (int i = 0; i < sup_matrix->n_rows; i++)
+    {
+        for (int j = 0; j < sup_matrix->n_columns; j++)
+        {
+            printf("%d ", sup_matrix->values[i][j]);
+        }
+        printf("\n");
+    }
+}
+int **init_matrix(int rows, int columns)
+{
+    int **values = (int **)malloc(sizeof(int *) * rows);
+    for (int i = 0; i < rows; i++)
+    {
+        values[i] = (int *)malloc(sizeof(int) * columns);
+        for (int j = 0; j < columns; j++)
+        {
+            values[i][j] = 0;
+        }
+    }
+
+    return values;
+}
+int find_row_index(action_t action, action_t *rows, int total_tows)
+{
+    for (int i = 0; i < total_tows; i++)
+    {
+        if (rows[i] == action)
+            return i;
+    }
+    return -1;
+}
+candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix);
+stg2_stats_t *del_seq(trace_stats_t *stats, candidate_list_t *can_list,
+                      sup_matrix_t *sup_matrix);
+void print_stg2(stg2_stats_t *);
 /* The following codes are derived from the list operations by
  * Alistair Moffat, PPSAA, Chapter 10, December 2012
  * (c) University of Melbourne */
