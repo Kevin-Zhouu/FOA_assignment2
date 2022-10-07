@@ -604,14 +604,15 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
 }
 int calc_pd(sup_t *xy, sup_t *yx)
 {
-    int result = DECIMAL_TO_PERCENT * (abs(xy->freq - yx->freq)) /
-                 max(xy->freq, yx->freq);
+    int result = DECIMAL_TO_PERCENT * (abs(xy->freq - yx->freq) /
+                                       max(xy->freq, yx->freq));
     return result;
 }
 
 int calc_w(sup_t *xy, sup_t *yx, int pd)
 {
     int result = abs(WEIGHT_C - pd) * max(xy->freq, yx->freq);
+    return result;
 }
 stg2_stats_t *del_seq(trace_stats_t *stats, candidate_list_t *can_list,
                       sup_matrix_t *sup_matrix);
