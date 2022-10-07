@@ -532,6 +532,11 @@ void print_matrix(sup_matrix_t *sup_matrix)
 {
     for (int i = 0; i < sup_matrix->n_rows; i++)
     {
+        printf("%c ", sup_matrix->rows[i]);
+    }
+    for (int i = 0; i < sup_matrix->n_rows; i++)
+    {
+        printf("%c ", sup_matrix->rows[i]);
         for (int j = 0; j < sup_matrix->n_columns; j++)
         {
             printf("%d ", sup_matrix->values[i][j]);
