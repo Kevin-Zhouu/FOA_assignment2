@@ -175,7 +175,7 @@ void print_all_trace(trace_list_t *trace_list);
 int main(int argc, char *argv[])
 {
 
-    // freopen("test0.txt", "r", stdin);
+    freopen("test0.txt", "r", stdin);
 
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
@@ -490,8 +490,7 @@ sup_matrix_t *generate_seq_matrix(log_t *log, trace_stats_t *stats)
         while (cur_event != NULL)
         {
             action_t cur_action = cur_event->actn;
-            if (is_event_exist(sup_matrix->rows, row_index + 1,
-                               cur_action) == FALSE)
+            if (find_row_index(cur_action, sup_matrix->rows, row_index + 1) == -1)
             {
                 sup_matrix->rows[row_index] = cur_action;
                 sup_matrix->columns[row_index] = cur_action;
