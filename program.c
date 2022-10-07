@@ -154,7 +154,7 @@ void print_stg_0(trace_stats_t *stats);
 
 void calc_stg_1(trace_stats_t *stats);
 int **init_matrix(int rows, int columns);
-sup_matrix_t *generate_seq_matrix(log_t *log, trace_stats_t *);
+sup_matrix_t *generate_seq_matrix(log_t *log, trace_stats_t *stats);
 candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix);
 stg2_stats_t *del_seq(trace_stats_t *stats, candidate_list_t *can_list,
                       sup_matrix_t *sup_matrix);
