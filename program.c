@@ -518,7 +518,7 @@ sup_matrix_t *generate_seq_matrix(log_t *log, trace_stats_t *stats)
                                          sup_matrix->rows, row_index);
             int y_index = find_row_index(cur_event->actn,
                                          sup_matrix->columns, row_index);
-            sup_matrix->values[x_index][y_index];
+            sup_matrix->values[x_index][y_index] += 1;
             prev_event = cur_event;
             cur_event = cur_event->next;
         }
