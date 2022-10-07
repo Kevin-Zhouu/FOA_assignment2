@@ -180,8 +180,8 @@ int main(int argc, char *argv[])
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
 
-    calc_stg_0(trace_list);
-    calc_stg_1(trace_list);
+    trace_stats_t stats = calc_stg_0(trace_list);
+    calc_stg_1(&stats);
     // print_all_trace(trace_list);
     for (int i = 0; i < trace_list->num_traces; i++)
     {
