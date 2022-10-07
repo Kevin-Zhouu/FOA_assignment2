@@ -154,7 +154,7 @@ void print_stg_0(trace_stats_t *stats);
 
 void calc_stg_1(trace_stats_t *stats);
 int **init_matrix(int rows, int columns);
-sup_matrix_t *generate_seq_matrix(log_t *log, trace_stats_t *stats);
+sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats);
 candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix);
 stg2_stats_t *del_seq(trace_stats_t *stats, candidate_list_t *can_list,
                       sup_matrix_t *sup_matrix);
@@ -480,7 +480,7 @@ void calc_stg_1(trace_stats_t *stats)
     // candidate_list_t *can_list = find_potential_seq(sup_matrix);
     // del_seq(stats, can_list, sup_matrix);
 }
-sup_matrix_t *generate_seq_matrix(log_t *log, trace_stats_t *stats)
+sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats)
 {
 
     sup_matrix_t *sup_matrix = (sup_matrix_t *)malloc(sizeof(*sup_matrix));
@@ -490,9 +490,9 @@ sup_matrix_t *generate_seq_matrix(log_t *log, trace_stats_t *stats)
                                              stats->n_dis_events);
     int row_index = 0;
     // find all rows and columns
-    for (int i = 0; i < log->ndtr; i++)
+    for (int i = 0; i < log->num_traces; i++)
     {
-        trace_t *cur_trace = log->trcs[i];
+        trace_t *cur_trace = log->traces[i];
         event_t *cur_event = cur_trace->head;
 
         while (cur_event != NULL)
@@ -512,9 +512,9 @@ sup_matrix_t *generate_seq_matrix(log_t *log, trace_stats_t *stats)
     sup_matrix->columns = (action_t *)realloc(sup_matrix->columns,
                                               sizeof(action_t) * row_index);
     sup_matrix->values = init_matrix(row_index, row_index);
-    for (int i = 0; i < log->ndtr; i++)
+    for (int i = 0; i < log->num_traces; i++)
     {
-        trace_t *cur_trace = log->trcs[i];
+        trace_t *cur_trace = log->traces[i];
 
         event_t *prev_event = cur_trace->head;
         event_t *cur_event = cur_trace->head->next;
@@ -526,7 +526,7 @@ sup_matrix_t *generate_seq_matrix(log_t *log, trace_stats_t *stats)
                                          sup_matrix->rows, row_index);
             int y_index = find_row_index(cur_event->actn,
                                          sup_matrix->columns, row_index);
-            sup_matrix->values[x_index][y_index] += cur_trace->freq *;
+            sup_matrix->values[x_index][y_index] += 1;
             prev_event = cur_event;
             cur_event = cur_event->next;
         }
