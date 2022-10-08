@@ -500,12 +500,13 @@ void calc_stg_1(trace_stats_t *stats)
            can_list->cans[i]->sup->y < 256)
     {
         stg1_stats_t stg1_stats = del_seq(stats, can_list, (action_t)256 + i);
+
+        print_stg2(&stg1_stats);
         calc_evt_stats(stats);
         sup_matrix = generate_seq_matrix(stats->trace_list, stats);
         print_matrix(sup_matrix, DURING_STAGE);
         // print_all_trace(stats->trace_list);
         can_list = find_potential_seq(sup_matrix);
-        print_stg2(&stg1_stats);
         i++;
     }
 }
@@ -572,7 +573,7 @@ void print_matrix(sup_matrix_t *sup_matrix, int stage)
     else if (stage == 1)
         printf("==STAGE 1============================\n");
     else if (stage == 2)
-        printf("==STAGE w============================\n");
+        printf("==STAGE 2============================\n");
     printf("     ");
     for (int i = 0; i < sup_matrix->n_rows; i++)
     {
@@ -594,7 +595,7 @@ void print_matrix(sup_matrix_t *sup_matrix, int stage)
         }
         printf("\n");
     }
-    printf("-------------------------------------");
+    printf("-------------------------------------\n");
 }
 int **init_matrix(int rows, int columns)
 {
