@@ -584,8 +584,9 @@ int find_row_index(action_t action, action_t *rows, int total_tows)
 }
 candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
 {
-    candidate_list_t *can_list = (candidate_list_t *)malloc(
-        sizeof(candidate_list_t));
+    candidate_list_t **can_list = (candidate_list_t **)malloc(
+        sizeof(candidate_list_t *) * sup_matrix->n_rows);
+    int can_index = 0;
     int n_rows = sup_matrix->n_rows;
     // looping over the rows
     for (int i = 0; i < n_rows; i++)
@@ -593,17 +594,30 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
         // looping over the columns
         for (int j = 0; j < n_rows; j++)
         {
-            sup_t xy = {sup_matrix->rows[i], sup_matrix->rows[j],
-                        sup_matrix->values[i][j]};
+            candidate_t *can = (candidate_t *)malloc(sizeof(candidate_t));
+            sup_t *xy = (sup_t *)malloc(sizeof(sup_t));
+            xy->x = sup_matrix->rows[i];
+            xy->y = sup_matrix->columns[j];
+            xy->freq = sup_matrix->values[i][j];
+
             sup_t yx = {sup_matrix->rows[j], sup_matrix->rows[i],
                         sup_matrix->values[j][i]};
             int pd = calc_pd(&xy, &yx);
             int w = calc_w(&xy, &yx, pd);
+            can->sup = xy;
+            can->pd = pd;
+            can->w = w;
             if (pd > SEQ_PD_THRESHOLD)
             {
-                printf("seq(%c,%c) pd=%d w=%d\n", xy.x, xy.y, pd, w);
+                printf("seq(%c,%c) pd=%d w=%d\n", xy->x, xy->y, pd, w);
+                can_list[can_index] = can;
+                can_index++;
             }
         }
+    }
+    for (int i = 0; i < can_index; i++)
+    {
+        printf("seq(%c,%c) pd=%d w=%d\n", can_list[i]->sup->x, can_list[i]->sup->y, can_list[i]->pd, can_list[i]->w);
     }
 }
 int calc_pd(sup_t *xy, sup_t *yx)
