@@ -134,8 +134,8 @@ typedef struct
 {
     sup_t seq;
     action_t code;
-    sup_matrix_t *sup_matrix;
-} stg2_stats_t;
+    int n_rm;
+} stg1_stats_t;
 
 /* WHERE IT ALL HAPPENS ------------------------------------------------------*/
 // Function Definitions
@@ -159,13 +159,12 @@ void calc_stg_1(trace_stats_t *stats);
 int **init_matrix(int rows, int columns);
 sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats);
 candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix);
-stg2_stats_t *del_seq(trace_stats_t *stats, candidate_list_t *can_list,
-                      sup_matrix_t *sup_matrix);
+stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list, action_t code);
 void print_matrix(sup_matrix_t *sup_matrix);
 int calc_pd(sup_t *xy, sup_t *yx);
 int calc_w(sup_t *xy, sup_t *yx, int pd);
 int find_row_index(action_t action, action_t *rows, int total_tows);
-void print_stg2(stg2_stats_t *);
+void print_stg2(stg1_stats_t *);
 int cmp_cans(const void *a, const void *b);
 // Linked list operations
 trace_t *make_empty_list(void);
@@ -485,7 +484,9 @@ void calc_stg_1(trace_stats_t *stats)
     sup_matrix_t *sup_matrix = generate_seq_matrix(stats->trace_list, stats);
     print_matrix(sup_matrix);
     candidate_list_t *can_list = find_potential_seq(sup_matrix);
-    //  del_seq(stats, can_list, sup_matrix);
+    stg1_stats_t stg1_stats = del_seq(stats, can_list, 256);
+    sup_matrix_t *sup_matrix = generate_seq_matrix(stats->trace_list, stats);
+    print_matrix(sup_matrix);
 }
 sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats)
 {
@@ -656,9 +657,43 @@ int calc_w(sup_t *xy, sup_t *yx, int pd)
     int result = abs(WEIGHT_C - pd) * max(xy->freq, yx->freq);
     return result;
 }
-stg2_stats_t *del_seq(trace_stats_t *stats, candidate_list_t *can_list,
-                      sup_matrix_t *sup_matrix);
-void print_stg2(stg2_stats_t *);
+stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
+                     action_t code)
+{
+    candidate_t *cur_can = can_list->cans[0];
+    action_t x = cur_can->sup->x;
+    action_t y = cur_can->sup->y;
+    trace_list_t *log = stats->trace_list;
+    stg1_stats_t stg2_stats = {
+        *(cur_can->sup),
+        code,
+        0};
+    int n_rm = 0;
+    for (int i = 0; i < log->num_traces; i++)
+    {
+        trace_t *cur_trace = log->traces[i];
+        event_t *cur_event = cur_trace->head;
+
+        while (cur_event != NULL)
+        {
+            action_t cur_action = cur_event->actn;
+            if (cur_action == x)
+            {
+                cur_event->actn = code;
+                n_rm++;
+            }
+            if (cur_action == y)
+            {
+                cur_event->next = cur_event->next->next;
+                n_rm++;
+            }
+            cur_event = cur_event->next;
+        }
+    }
+    stg2_stats.n_rm = n_rm;
+    return stg2_stats;
+}
+void print_stg2(stg1_stats_t *);
 /* The following codes are derived from the list operations by
  * Alistair Moffat, PPSAA, Chapter 10, December 2012
  * (c) University of Melbourne */
