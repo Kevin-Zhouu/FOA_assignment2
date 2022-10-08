@@ -633,7 +633,7 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
                         sup_matrix->values[j][i]};
             int pd = calc_pd(xy, &yx);
             int w = calc_w(xy, &yx, pd);
-            if (pd > SEQ_PD_THRESHOLD)
+            if (pd > SEQ_PD_THRESHOLD && xy->freq > yx.freq && xy.x != xy.y)
             {
 
                 candidate_t *can = (candidate_t *)malloc(sizeof(can));
