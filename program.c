@@ -596,7 +596,6 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
         // looping over the columns
         for (int j = 0; j < n_rows; j++)
         {
-            candidate_t *can = (candidate_t *)malloc(sizeof(candidate_t));
             sup_t *xy = (sup_t *)malloc(sizeof(xy));
             xy->x = sup_matrix->rows[i];
             xy->y = sup_matrix->columns[j];
@@ -606,14 +605,20 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
                         sup_matrix->values[j][i]};
             int pd = calc_pd(&xy, &yx);
             int w = calc_w(&xy, &yx, pd);
-            can->sup = xy;
-            can->pd = pd;
-            can->w = w;
             if (pd > SEQ_PD_THRESHOLD)
             {
+
+                candidate_t *can = (candidate_t *)malloc(sizeof(candidate_t));
+                can->sup = xy;
+                can->pd = pd;
+                can->w = w;
                 // printf("seq(%c,%c) pd=%d w=%d\n", xy->x, xy->y, pd, w);
                 can_list->cans[can_index] = can;
                 can_index++;
+            }
+            else
+            {
+                free(xy);
             }
         }
     }
