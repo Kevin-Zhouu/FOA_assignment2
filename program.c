@@ -683,7 +683,7 @@ stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
             {
                 prev_event->next = cur_event;
                 n_rm++;
-                i++;
+                break;
             }
             else if (cur_action == x || cur_action == y)
             {
