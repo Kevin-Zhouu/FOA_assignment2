@@ -153,6 +153,7 @@ int is_event_exist(event_freq_t *event_freq_list, int n_events,
 int add_event_freq(event_freq_t *event_freq_list, int tot_events,
                    action_t action, int num_actn);
 int event_cmp(const void *A, const void *B);
+int action_cmp(const void *A, const void *B);
 void print_stg_0(trace_stats_t *stats);
 
 void calc_stg_1(trace_stats_t *stats);
@@ -311,6 +312,14 @@ int event_cmp(const void *A, const void *B)
     assert(A != NULL && B != NULL);
     action_t letter_A = ((event_freq_t *)A)->action;
     action_t letter_B = ((event_freq_t *)B)->action;
+    int result = (int)letter_A - (int)letter_B;
+    return result;
+};
+int action_cmp(const void *A, const void *B)
+{
+    assert(A != NULL && B != NULL);
+    action_t letter_A = *(action_t *)A;
+    action_t letter_B = *(action_t *)B;
     int result = (int)letter_A - (int)letter_B;
     return result;
 };
@@ -519,8 +528,10 @@ sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats)
     }
     sup_matrix->rows = (action_t *)realloc(sup_matrix->rows,
                                            sizeof(action_t) * row_index);
+    qsort(sup_matrix->rows, sizeof(action_t), row_index, action_cmp);
     sup_matrix->columns = (action_t *)realloc(sup_matrix->columns,
                                               sizeof(action_t) * row_index);
+    qsort(sup_matrix->columns, sizeof(action_t), row_index, action_cmp);
     sup_matrix->values = init_matrix(row_index, row_index);
     for (int i = 0; i < log->num_traces; i++)
     {
