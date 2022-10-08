@@ -719,15 +719,10 @@ stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
         while (cur_event != NULL)
         {
             action_t cur_action = cur_event->actn;
-            if (prev_event->actn == code)
+            if ((prev_event->actn == x && cur_action == y) || prev_event->actn == y && cur_action == x)
             {
+                prev_event->actn = code;
                 prev_event->next = cur_event->next;
-                n_rm++;
-                break;
-            }
-            else if (prev_event->actn == x && cur_action == y)
-            {
-                cur_event->actn = code;
                 n_rm++;
             }
             prev_event = cur_event;
