@@ -611,7 +611,7 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
             can->w = w;
             if (pd > SEQ_PD_THRESHOLD)
             {
-                printf("seq(%c,%c) pd=%d w=%d\n", xy->x, xy->y, pd, w);
+                // printf("seq(%c,%c) pd=%d w=%d\n", xy->x, xy->y, pd, w);
                 can_list->cans[can_index] = can;
                 can_index++;
             }
