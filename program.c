@@ -594,6 +594,7 @@ void print_matrix(sup_matrix_t *sup_matrix, int stage)
         }
         printf("\n");
     }
+    printf("-------------------------------------");
 }
 int **init_matrix(int rows, int columns)
 {
