@@ -836,9 +836,9 @@ void print_trace(trace_t *list)
     while (cur_event != NULL)
     {
         if (cur_event->actn < 256)
-            printf("%c", cur_event->actn);
+            printf("%c,", cur_event->actn);
         else
-            printf("%d", cur_event->actn);
+            printf("%d,", cur_event->actn);
         cur_event = cur_event->next;
     }
     printf("\n");
