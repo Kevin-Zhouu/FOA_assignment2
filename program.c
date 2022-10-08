@@ -484,7 +484,8 @@ void calc_stg_1(trace_stats_t *stats)
     sup_matrix_t *sup_matrix = generate_seq_matrix(stats->trace_list, stats);
     print_matrix(sup_matrix);
     candidate_list_t *can_list = find_potential_seq(sup_matrix);
-    stg1_stats_t stg1_stats = del_seq(stats, can_list, 256);
+    stg1_stats_t stg1_stats = del_seq(stats, can_list, (action_t)256);
+    calc_evt_stats(stats);
     sup_matrix = generate_seq_matrix(stats->trace_list, stats);
     print_matrix(sup_matrix);
     print_all_trace(stats->trace_list);
