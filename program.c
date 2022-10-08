@@ -503,6 +503,7 @@ void calc_stg_1(trace_stats_t *stats)
         print_matrix(sup_matrix);
         print_all_trace(stats->trace_list);
         can_list = find_potential_seq(sup_matrix);
+        print_stg2(&stg1_stats);
         i++;
     }
 }
@@ -667,13 +668,13 @@ void print_seq(sup_t *sup)
     int x = (int)sup->x;
     int y = (int)sup->y;
     if (x < 256 && y < 256)
-        printf("seq(%c,%c) ", x, y);
+        printf("SEQ(%c,%c) ", x, y);
     else if (x >= 256 && y < 256)
-        printf("seq(%d,%c) ", x, y);
+        printf("SEQ(%d,%c) ", x, y);
     else if (x < 256 && y >= 256)
-        printf("seq(%c,%d) ", x, y);
+        printf("SEQ(%c,%d) ", x, y);
     else
-        printf("seq(%d,%d) ", x, y);
+        printf("SEQ(%d,%d) ", x, y);
 }
 int cmp_cans(const void *a, const void *b)
 {
@@ -710,6 +711,10 @@ stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
         code,
         0};
     int n_rm = 0;
+    if (x >= 256 || y >= 256)
+    {
+        return stg2_stats;
+    }
     for (int i = 0; i < log->num_traces; i++)
     {
         trace_t *cur_trace = log->traces[i];
@@ -753,7 +758,12 @@ stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
     stg2_stats.n_rm = n_rm;
     return stg2_stats;
 }
-void print_stg2(stg1_stats_t *);
+void print_stg2(stg1_stats_t *stg1_stats)
+{
+    printf("%d = ", stg1_stats->code);
+    print_seq(&(stg1_stats->seq));
+    printf("\nNumber of events removed: %d", stg1_stats->n_rm);
+}
 /* The following codes are derived from the list operations by
  * Alistair Moffat, PPSAA, Chapter 10, December 2012
  * (c) University of Melbourne */
