@@ -725,7 +725,7 @@ stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
                 n_rm++;
                 break;
             }
-            else if (cur_action == x || cur_action == y)
+            else if (prev_event->actn == x && cur_action == y)
             {
                 cur_event->actn = code;
                 n_rm++;
