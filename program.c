@@ -55,6 +55,7 @@
 #define DECIMAL_TO_PERCENT 100
 #define WEIGHT_C 50
 #define SEQ_PD_THRESHOLD 70
+#define DURING_STAGE -1
 /* TYPE DEFINITIONS ----------------------------------------------------------*/
 typedef unsigned int action_t; // an action is identified by an integer
 
@@ -161,7 +162,7 @@ int **init_matrix(int rows, int columns);
 sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats);
 candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix);
 stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list, action_t code);
-void print_matrix(sup_matrix_t *sup_matrix);
+void print_matrix(sup_matrix_t *sup_matrix, int stage);
 int calc_pd(sup_t *xy, sup_t *yx);
 int calc_w(sup_t *xy, sup_t *yx, int pd);
 int find_row_index(action_t action, action_t *rows, int total_tows);
@@ -492,7 +493,7 @@ int add_event_freq(event_freq_t *event_freq_list, int tot_events,
 void calc_stg_1(trace_stats_t *stats)
 {
     sup_matrix_t *sup_matrix = generate_seq_matrix(stats->trace_list, stats);
-    print_matrix(sup_matrix);
+    print_matrix(sup_matrix, 1);
     candidate_list_t *can_list = find_potential_seq(sup_matrix);
     int i = 0;
     while (can_list->num != 0 && can_list->cans[i]->sup->x < 256 &&
@@ -501,8 +502,8 @@ void calc_stg_1(trace_stats_t *stats)
         stg1_stats_t stg1_stats = del_seq(stats, can_list, (action_t)256 + i);
         calc_evt_stats(stats);
         sup_matrix = generate_seq_matrix(stats->trace_list, stats);
-        print_matrix(sup_matrix);
-        print_all_trace(stats->trace_list);
+        print_matrix(sup_matrix, DURING_STAGE);
+        // print_all_trace(stats->trace_list);
         can_list = find_potential_seq(sup_matrix);
         print_stg2(&stg1_stats);
         i++;
@@ -564,9 +565,14 @@ sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats)
     sup_matrix->n_columns = row_index;
     return sup_matrix;
 }
-void print_matrix(sup_matrix_t *sup_matrix)
+void print_matrix(sup_matrix_t *sup_matrix, int stage)
 {
-    printf("==STAGE 1============================\n");
+    if (stage == DURING_STAGE)
+        printf("=====================================\n");
+    else if (stage == 1)
+        printf("==STAGE 1============================\n");
+    else if (stage == 2)
+        printf("==STAGE w============================\n");
     printf("     ");
     for (int i = 0; i < sup_matrix->n_rows; i++)
     {
