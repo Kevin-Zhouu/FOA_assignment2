@@ -690,6 +690,7 @@ stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
                 cur_event->actn = code;
                 n_rm++;
             }
+            prev_event = cur_event;
             cur_event = cur_event->next;
         }
     }
