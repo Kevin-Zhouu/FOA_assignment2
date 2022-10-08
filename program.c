@@ -668,9 +668,9 @@ void print_seq(sup_t *sup)
     int y = (int)sup->y;
     if (x < 256 && y < 256)
         printf("seq(%c,%c) ", x, y);
-    else if (x > 256 && y < 256)
+    else if (x >= 256 && y < 256)
         printf("seq(%d,%c) ", x, y);
-    else if (x < 256 && y > 256)
+    else if (x < 256 && y >= 256)
         printf("seq(%c,%d) ", x, y);
     else
         printf("seq(%d,%d) ", x, y);
