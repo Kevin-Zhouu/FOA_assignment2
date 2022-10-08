@@ -562,7 +562,7 @@ sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats)
     {
         trace_t *cur_trace = log->traces[i];
 
-        event_t *prev_event = cur_trace->head;
+        // event_t *prev_event = cur_trace->head;
         event_t *cur_event = cur_trace->head->next;
 
         while (cur_event != NULL)
@@ -890,9 +890,9 @@ void print_trace(trace_t *list)
     while (cur_event != NULL)
     {
         if (cur_event->actn < 256)
-            printf("%c,", cur_event->actn);
+            printf("%c", cur_event->actn);
         else
-            printf("%d,", cur_event->actn);
+            printf("%d", cur_event->actn);
         cur_event = cur_event->next;
     }
     printf("\n");
