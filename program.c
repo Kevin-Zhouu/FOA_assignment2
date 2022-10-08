@@ -155,6 +155,7 @@ int add_event_freq(event_freq_t *event_freq_list, int tot_events,
                    action_t action, int num_actn);
 int event_cmp(const void *A, const void *B);
 int action_cmp(const void *A, const void *B);
+void print_event_freq(trace_stats_t *stats);
 void print_stg_0(trace_stats_t *stats);
 
 void calc_stg_1(trace_stats_t *stats);
@@ -457,6 +458,10 @@ void print_stg_0(trace_stats_t *stats)
     {
         print_trace(stats->most_freq_trc[i]);
     }
+    print_event_freq(stats);
+}
+void print_event_freq(trace_stats_t *stats)
+{
     for (int i = 0; i < stats->n_dis_events; i++)
     {
         printf("%c = %d\n", (stats->event_freq + i)->action,
@@ -505,10 +510,12 @@ void calc_stg_1(trace_stats_t *stats)
         stg1_stats_t stg1_stats = del_seq(stats, can_list, (action_t)256 + i);
 
         print_stg2(&stg1_stats);
+        print_event_freq(stats);
         calc_evt_stats(stats);
         sup_matrix = generate_seq_matrix(stats->trace_list, stats);
         // print_all_trace(stats->trace_list);
         can_list = find_potential_seq(sup_matrix);
+
         i++;
     }
 }
