@@ -528,10 +528,10 @@ sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats)
     }
     sup_matrix->rows = (action_t *)realloc(sup_matrix->rows,
                                            sizeof(action_t) * row_index);
-    qsort(sup_matrix->rows, sizeof(action_t), row_index, action_cmp);
+    qsort(sup_matrix->rows, row_index, sizeof(action_t), action_cmp);
     sup_matrix->columns = (action_t *)realloc(sup_matrix->columns,
                                               sizeof(action_t) * row_index);
-    qsort(sup_matrix->columns, sizeof(action_t), row_index, action_cmp);
+    qsort(sup_matrix->columns, row_index, sizeof(action_t), action_cmp);
     sup_matrix->values = init_matrix(row_index, row_index);
     for (int i = 0; i < log->num_traces; i++)
     {
