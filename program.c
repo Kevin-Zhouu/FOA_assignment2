@@ -496,8 +496,8 @@ void calc_stg_1(trace_stats_t *stats)
     print_matrix(sup_matrix, 1);
     candidate_list_t *can_list = find_potential_seq(sup_matrix);
     int i = 0;
-    while (can_list->num != 0 && can_list->cans[i]->sup->x < 256 &&
-           can_list->cans[i]->sup->y < 256)
+    while (can_list->num != 0 && can_list->cans[0]->sup->x < 256 &&
+           can_list->cans[0]->sup->y < 256)
     {
 
         stg1_stats_t stg1_stats = del_seq(stats, can_list, (action_t)256 + i);
