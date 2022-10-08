@@ -495,7 +495,8 @@ void calc_stg_1(trace_stats_t *stats)
     print_matrix(sup_matrix);
     candidate_list_t *can_list = find_potential_seq(sup_matrix);
     int i = 0;
-    while (can_list->num != 0 && i < 5)
+    while (can_list->num != 0 && can_list->cans[i]->sup->x < 256 &&
+           can_list->cans[i]->sup->y < 256)
     {
         stg1_stats_t stg1_stats = del_seq(stats, can_list, (action_t)256 + i);
         calc_evt_stats(stats);
@@ -711,10 +712,10 @@ stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
         code,
         0};
     int n_rm = 0;
-    if (x >= 256 || y >= 256)
-    {
-        return stg2_stats;
-    }
+    // if (x >= 256 || y >= 256)
+    // {
+    //     return stg1_stats_t
+    // }
     for (int i = 0; i < log->num_traces; i++)
     {
         trace_t *cur_trace = log->traces[i];
@@ -762,7 +763,7 @@ void print_stg2(stg1_stats_t *stg1_stats)
 {
     printf("%d = ", stg1_stats->code);
     print_seq(&(stg1_stats->seq));
-    printf("\nNumber of events removed: %d", stg1_stats->n_rm);
+    printf("\nNumber of events removed: %d\n", stg1_stats->n_rm);
 }
 /* The following codes are derived from the list operations by
  * Alistair Moffat, PPSAA, Chapter 10, December 2012
