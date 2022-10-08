@@ -487,6 +487,7 @@ void calc_stg_1(trace_stats_t *stats)
     stg1_stats_t stg1_stats = del_seq(stats, can_list, 256);
     sup_matrix = generate_seq_matrix(stats->trace_list, stats);
     print_matrix(sup_matrix);
+    print_all_trace(stats->trace_list);
 }
 sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats)
 {
