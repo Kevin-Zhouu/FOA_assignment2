@@ -588,7 +588,7 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
     candidate_list_t *can_list = (candidate_list_t *)malloc(
         sizeof(candidate_list_t));
     can_list->cans = (candidate_t **)malloc(
-        sizeof(cans));
+        sizeof(can_list->cans));
     int can_index = 0;
     int n_rows = sup_matrix->n_rows;
     // looping over the rows
