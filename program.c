@@ -603,8 +603,8 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
 
             sup_t yx = {sup_matrix->rows[j], sup_matrix->rows[i],
                         sup_matrix->values[j][i]};
-            int pd = calc_pd(&xy, &yx);
-            int w = calc_w(&xy, &yx, pd);
+            int pd = calc_pd(xy, &yx);
+            int w = calc_w(xy, &yx, pd);
             if (pd > SEQ_PD_THRESHOLD)
             {
 
