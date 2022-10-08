@@ -597,7 +597,7 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
         for (int j = 0; j < n_rows; j++)
         {
             candidate_t *can = (candidate_t *)malloc(sizeof(candidate_t));
-            sup_t *xy = (sup_t *)malloc(sizeof(sup_t));
+            sup_t *xy = (sup_t *)malloc(sizeof(xy));
             xy->x = sup_matrix->rows[i];
             xy->y = sup_matrix->columns[j];
             xy->freq = sup_matrix->values[i][j];
