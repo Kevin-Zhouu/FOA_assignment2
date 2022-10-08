@@ -493,15 +493,13 @@ int add_event_freq(event_freq_t *event_freq_list, int tot_events,
 void calc_stg_1(trace_stats_t *stats)
 {
     sup_matrix_t *sup_matrix = generate_seq_matrix(stats->trace_list, stats);
+    print_matrix(sup_matrix, 1);
     candidate_list_t *can_list = find_potential_seq(sup_matrix);
     int i = 0;
     while (can_list->num != 0 && can_list->cans[i]->sup->x < 256 &&
            can_list->cans[i]->sup->y < 256)
     {
-        if (i == 0)
-            print_matrix(sup_matrix, 1);
-        else
-            print_matrix(sup_matrix, -1);
+
         stg1_stats_t stg1_stats = del_seq(stats, can_list, (action_t)256 + i);
         print_stg2(&stg1_stats);
         calc_evt_stats(stats);
@@ -669,8 +667,8 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
     can_list->num = can_index;
     for (int i = 0; i < can_index; i++)
     {
-        // print_seq(can_list->cans[i]->sup);
-        // printf("pd=%d w=%d\n", can_list->cans[i]->pd, can_list->cans[i]->w);
+        print_seq(can_list->cans[i]->sup);
+        printf("pd=%d w=%d\n", can_list->cans[i]->pd, can_list->cans[i]->w);
     }
     return can_list;
 }
