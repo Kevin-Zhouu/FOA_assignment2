@@ -585,7 +585,7 @@ int find_row_index(action_t action, action_t *rows, int total_tows)
 candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
 {
     candidate_list_t *can_list = (candidate_list_t *)malloc(
-        sizeof(candidate_list_t *));
+        sizeof(candidate_list_t));
     can_list->cans = (candidate_list_t *)malloc(
         sizeof(candidate_t *) * sup_matrix->n_rows);
     int can_index = 0;
