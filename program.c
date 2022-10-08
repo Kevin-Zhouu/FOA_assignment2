@@ -629,11 +629,13 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
 }
 int calc_pd(sup_t *xy, sup_t *yx)
 {
-    printf("calc_pd(%c,%c)=%d\n", xy->x, xy->y, xy->freq - yx->freq);
+    printf("calc_pd(%c,%c)=%d\n", xy->x, xy->y, xy->freq);
     printf("den: %d\n", (DECIMAL_TO_PERCENT * abs(xy->freq - yx->freq)));
     printf("num: %d\n", max(xy->freq, yx->freq));
     int result = (DECIMAL_TO_PERCENT * abs(xy->freq - yx->freq)) /
                  max(xy->freq, yx->freq);
+
+    printf("result: %d\n", result);
     return result;
 }
 
