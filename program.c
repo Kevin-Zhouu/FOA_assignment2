@@ -680,7 +680,7 @@ stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
             action_t cur_action = cur_event->actn;
             if (cur_action == x)
             {
-                cur_event->actn = code;
+                cur_event->actn = 'X';
                 n_rm++;
             }
             if (cur_action == y)
