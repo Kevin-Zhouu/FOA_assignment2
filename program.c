@@ -625,7 +625,7 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
             }
         }
     }
-    qsort(can_list->cans, can_index, sizeof(candidate_t *), cmp_cans);
+    qsort(can_list->cans, can_index, sizeof(candidate_t **), cmp_cans);
     printf("------------\n");
     for (int i = 0; i < can_index; i++)
     {
