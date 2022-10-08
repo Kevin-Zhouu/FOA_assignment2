@@ -54,6 +54,7 @@
 #define FALSE 0
 #define DECIMAL_TO_PERCENT 100
 #define WEIGHT_C 50
+#define SEQ_PD_THRESHOLD 70
 /* TYPE DEFINITIONS ----------------------------------------------------------*/
 typedef unsigned char action_t; // an action is identified by an integer
 
@@ -598,7 +599,10 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
                         sup_matrix->values[j][i]};
             int pd = calc_pd(&xy, &yx);
             int w = calc_w(&xy, &yx, pd);
-            printf("seq(%c,%c) pd=%d w=%d\n", xy.x, xy.y, pd, w);
+            if (pd > SEQ_PD_THRESHOLD)
+            {
+                printf("seq(%c,%c) pd=%d w=%d\n", xy.x, xy.y, pd, w);
+            }
         }
     }
 }
