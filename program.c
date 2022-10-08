@@ -611,7 +611,7 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
 
                 candidate_t *can = (candidate_t *)malloc(sizeof(can));
                 can_list->cans = (candidate_t **)realloc(
-                    can_list->cans, sizeof(candidate_t *) * (can_index + 1));
+                    can_list->cans, sizeof(candidate_t *) * (can_index));
                 can->sup = xy;
                 can->pd = pd;
                 can->w = w;
