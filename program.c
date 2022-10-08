@@ -317,7 +317,7 @@ int event_cmp(const void *A, const void *B)
     action_t letter_B = ((event_freq_t *)B)->action;
     int result = (int)letter_A - (int)letter_B;
     return result;
-};
+}
 int action_cmp(const void *A, const void *B)
 {
     assert(A != NULL && B != NULL);
@@ -325,7 +325,7 @@ int action_cmp(const void *A, const void *B)
     action_t letter_B = *(action_t *)B;
     int result = (int)letter_A - (int)letter_B;
     return result;
-};
+}
 void trace_swap(trace_list_t *trace_list, int index_A, int index_B)
 {
     assert(trace_list != NULL);
@@ -335,7 +335,7 @@ void trace_swap(trace_list_t *trace_list, int index_A, int index_B)
 }
 trace_stats_t calc_stg_0(trace_list_t *trace_list)
 {
-    trace_stats_t stats = {0, 0, 0, 0, NULL, NULL, 0, 0, NULL};
+    trace_stats_t stats = {0, 0, 0, 0, NULL, NULL, 0, 0, NULL, NULL};
     stats.n_traces = trace_list->num_traces;
     stats.most_freq_trc = (trace_t **)malloc(sizeof(trace_t *) *
                                              stats.n_traces);
@@ -515,8 +515,8 @@ void calc_stg_1(trace_stats_t *stats)
         stg1_stats_t stg1_stats = del_seq(stats, can_list, (action_t)256 + i);
 
         print_stg2(&stg1_stats);
-        print_event_freq(stats);
         calc_evt_stats(stats);
+        print_event_freq(stats);
         sup_matrix = generate_seq_matrix(stats->trace_list, stats);
         // print_all_trace(stats->trace_list);
         can_list = find_potential_seq(sup_matrix);
