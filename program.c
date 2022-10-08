@@ -167,6 +167,7 @@ int calc_w(sup_t *xy, sup_t *yx, int pd);
 int find_row_index(action_t action, action_t *rows, int total_tows);
 void print_stg2(stg1_stats_t *);
 int cmp_cans(const void *a, const void *b);
+void print_seq(sup_t *sup);
 // Linked list operations
 trace_t *make_empty_list(void);
 int is_empty_list(trace_t *list);
@@ -656,9 +657,21 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
     can_list->num = can_index;
     for (int i = 0; i < can_index; i++)
     {
-        printf("seq(%c,%c) pd=%d w=%d\n", can_list->cans[i]->sup->x, can_list->cans[i]->sup->y, can_list->cans[i]->pd, can_list->cans[i]->w);
+        print_seq(can_list->cans[i]->sup);
+        printf("pd=%d w=%d\n", can_list->cans[i]->pd, can_list->cans[i]->w);
     }
     return can_list;
+}
+void print_seq(sup_t *sup)
+{
+    if (sup->x < 256 && sup->y < 256)
+        printf("seq(%c,%c) ", sup->x, sup->y);
+    else if (sup->x > 256 && sup->y < 256)
+        printf("seq(%d,%c) ", sup->x, sup->y);
+    else if (sup->x < 256 && sup->y > 256)
+        printf("seq(%c,%d) ", sup->x, sup->y);
+    else
+        printf("seq(%d,%d) ", sup->x, sup->y);
 }
 int cmp_cans(const void *a, const void *b)
 {
