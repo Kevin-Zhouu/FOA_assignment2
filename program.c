@@ -625,7 +625,6 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
             }
         }
     }
-    printf("%e", can_list->cans[0]);
     qsort(can_list->cans, can_index, sizeof(candidate_t *), cmp_cans);
     printf("------------\n");
     for (int i = 0; i < can_index; i++)
@@ -635,8 +634,8 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
 }
 int cmp_cans(const void *a, const void *b)
 {
-    candidate_t *can_a = (candidate_t *)a;
-    candidate_t *can_b = (candidate_t *)b;
+    candidate_t *can_a = *(candidate_t **)a;
+    candidate_t *can_b = *(candidate_t **)b;
     return can_b->w - can_a->w;
 }
 int calc_pd(sup_t *xy, sup_t *yx)
