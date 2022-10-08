@@ -498,10 +498,12 @@ void calc_stg_1(trace_stats_t *stats)
     while (can_list->num != 0 && can_list->cans[0]->sup->x < 256 &&
            can_list->cans[0]->sup->y < 256)
     {
-
+        if (i == 0)
+            print_matrix(sup_matrix, 1);
+        else
+            print_matrix(sup_matrix, DURING_STAGE);
         stg1_stats_t stg1_stats = del_seq(stats, can_list, (action_t)256 + i);
 
-        print_matrix(sup_matrix, DURING_STAGE);
         print_stg2(&stg1_stats);
         calc_evt_stats(stats);
         sup_matrix = generate_seq_matrix(stats->trace_list, stats);
