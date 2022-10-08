@@ -127,7 +127,7 @@ typedef struct
 } candidate_t;
 typedef struct
 {
-    candidate_t *candidates;
+    candidate_t **cans;
     int num;
 } candidate_list_t;
 typedef struct
@@ -584,8 +584,10 @@ int find_row_index(action_t action, action_t *rows, int total_tows)
 }
 candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
 {
-    candidate_list_t **can_list = (candidate_list_t **)malloc(
-        sizeof(candidate_list_t *) * sup_matrix->n_rows);
+    candidate_list_t *can_list = (candidate_list_t *)malloc(
+        sizeof(candidate_list_t *));
+    can_list->cans = (candidate_list_t *)malloc(
+        sizeof(candidate_t *) * sup_matrix->n_rows);
     int can_index = 0;
     int n_rows = sup_matrix->n_rows;
     // looping over the rows
@@ -610,14 +612,14 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
             if (pd > SEQ_PD_THRESHOLD)
             {
                 printf("seq(%c,%c) pd=%d w=%d\n", xy->x, xy->y, pd, w);
-                can_list[can_index] = can;
+                can_list->cans[can_index] = can;
                 can_index++;
             }
         }
     }
     for (int i = 0; i < can_index; i++)
     {
-        printf("seq(%c,%c) pd=%d w=%d\n", can_list[i]->sup->x, can_list[i]->sup->y, can_list[i]->pd, can_list[i]->w);
+        printf("seq(%c,%c) pd=%d w=%d\n", can_list->cans[i]->sup->x, can_list->cans[i]->sup->y, can_list->cans[i]->pd, can_list->cans[i]->w);
     }
 }
 int calc_pd(sup_t *xy, sup_t *yx)
