@@ -631,6 +631,7 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
     {
         printf("seq(%c,%c) pd=%d w=%d\n", can_list->cans[i]->sup->x, can_list->cans[i]->sup->y, can_list->cans[i]->pd, can_list->cans[i]->w);
     }
+    return can_list;
 }
 int cmp_cans(const void *a, const void *b)
 {
