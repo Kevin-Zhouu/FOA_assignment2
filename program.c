@@ -674,11 +674,18 @@ stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
     {
         trace_t *cur_trace = log->traces[i];
         event_t *cur_event = cur_trace->head;
+        event_t *prev_event = cur_trace->head;
 
         while (cur_event != NULL)
         {
             action_t cur_action = cur_event->actn;
-            if (cur_action == x || cur_action == y)
+            if (prev_event->actn == code)
+            {
+                prev_event->next = cur_event;
+                n_rm++;
+                i++;
+            }
+            else if (cur_action == x || cur_action == y)
             {
                 cur_event->actn = code;
                 n_rm++;
