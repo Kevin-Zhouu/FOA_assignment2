@@ -608,7 +608,7 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
             if (pd > SEQ_PD_THRESHOLD)
             {
 
-                candidate_t *can = (candidate_t *)malloc(sizeof(candidate_t));
+                candidate_t *can = (candidate_t *)malloc(sizeof(can));
                 can->sup = xy;
                 can->pd = pd;
                 can->w = w;
