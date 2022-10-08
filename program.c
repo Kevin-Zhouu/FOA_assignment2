@@ -562,7 +562,7 @@ sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats)
     {
         trace_t *cur_trace = log->traces[i];
 
-        // event_t *prev_event = cur_trace->head;
+        event_t *prev_event = cur_trace->head;
         event_t *cur_event = cur_trace->head->next;
 
         while (cur_event != NULL)
@@ -742,7 +742,7 @@ stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
     {
         trace_t *cur_trace = log->traces[i];
         event_t *cur_event = cur_trace->head;
-        event_t *prev_event = cur_trace->head;
+        // event_t *prev_event = cur_trace->head;
 
         while (cur_event != NULL)
         {
@@ -752,7 +752,7 @@ stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
                 cur_event->actn = code;
                 // n_rm++;
             }
-            prev_event = cur_event;
+            // prev_event = cur_event;
             cur_event = cur_event->next;
         }
     }
