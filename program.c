@@ -181,7 +181,7 @@ int max(int x, int y);
 int main(int argc, char *argv[])
 {
 
-    freopen("test1.txt", "r", stdin);
+    freopen("test3.txt", "r", stdin);
 
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
@@ -493,11 +493,17 @@ void calc_stg_1(trace_stats_t *stats)
     sup_matrix_t *sup_matrix = generate_seq_matrix(stats->trace_list, stats);
     print_matrix(sup_matrix);
     candidate_list_t *can_list = find_potential_seq(sup_matrix);
-    stg1_stats_t stg1_stats = del_seq(stats, can_list, (action_t)256);
-    calc_evt_stats(stats);
-    sup_matrix = generate_seq_matrix(stats->trace_list, stats);
-    print_matrix(sup_matrix);
-    print_all_trace(stats->trace_list);
+    int i = 0;
+    while (can_list->num != 0 && i < 5)
+    {
+        stg1_stats_t stg1_stats = del_seq(stats, can_list, (action_t)256 + i);
+        calc_evt_stats(stats);
+        sup_matrix = generate_seq_matrix(stats->trace_list, stats);
+        print_matrix(sup_matrix);
+        print_all_trace(stats->trace_list);
+        can_list = find_potential_seq(sup_matrix);
+        i++;
+    }
 }
 sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats)
 {
@@ -647,6 +653,7 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
     }
     qsort(can_list->cans, can_index, sizeof(candidate_t *), cmp_cans);
     printf("------------\n");
+    can_list->num = can_index;
     for (int i = 0; i < can_index; i++)
     {
         printf("seq(%c,%c) pd=%d w=%d\n", can_list->cans[i]->sup->x, can_list->cans[i]->sup->y, can_list->cans[i]->pd, can_list->cans[i]->w);
