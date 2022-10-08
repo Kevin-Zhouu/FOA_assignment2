@@ -797,7 +797,10 @@ void print_trace(trace_t *list)
     cur_event = list->head;
     while (cur_event != NULL)
     {
-        printf("%c", cur_event->actn);
+        if (cur_event->actn < 256)
+            printf("%c", cur_event->actn);
+        else
+            printf("%d", cur_event->actn);
         cur_event = cur_event->next;
     }
     printf("\n");
