@@ -464,8 +464,13 @@ void print_event_freq(trace_stats_t *stats)
 {
     for (int i = 0; i < stats->n_dis_events; i++)
     {
-        printf("%c = %d\n", (stats->event_freq + i)->action,
-               (stats->event_freq + i)->freq);
+        action_t cur_act = (stats->event_freq + i)->action;
+        if (cur_act < 256)
+            printf("%c = %d\n", cur_act,
+                   (stats->event_freq + i)->freq);
+        else
+            printf("%d = %d\n", cur_act,
+                   (stats->event_freq + i)->freq);
     }
 }
 int is_event_exist(event_freq_t *event_freq_list, int tot_events,
