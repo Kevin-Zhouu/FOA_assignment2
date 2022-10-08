@@ -550,12 +550,18 @@ void print_matrix(sup_matrix_t *sup_matrix)
     printf("     ");
     for (int i = 0; i < sup_matrix->n_rows; i++)
     {
-        printf("%5c", sup_matrix->rows[i]);
+        if (sup_matrix->rows[i] < 256)
+            printf("%5c", sup_matrix->rows[i]);
+        else
+            printf("%5d", sup_matrix->rows[i]);
     }
     printf("\n");
     for (int i = 0; i < sup_matrix->n_rows; i++)
     {
-        printf("%5c", sup_matrix->rows[i]);
+        if (sup_matrix->rows[i] < 256)
+            printf("%5c", sup_matrix->rows[i]);
+        else
+            printf("%5d", sup_matrix->rows[i]);
         for (int j = 0; j < sup_matrix->n_columns; j++)
         {
             printf("%5d", sup_matrix->values[i][j]);
