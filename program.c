@@ -731,9 +731,9 @@ stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
     for (int i = 0; i < log->num_traces; i++)
     {
         trace_t *cur_trace = log->traces[i];
-        event_t *cur_event = cur_trace->head;
-        event_t *prev_event = NULL;
-
+        event_t *cur_event = cur_trace->head->next;
+        event_t *prev_event = cur_trace->head;
+        int j = 0;
         while (cur_event != NULL)
         {
             action_t cur_action = cur_event->actn;
@@ -747,6 +747,7 @@ stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
             }
             prev_event = cur_event;
             cur_event = cur_event->next;
+            j++;
         }
     }
     stg2_stats.n_rm = n_rm;
