@@ -642,7 +642,7 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
                 can->sup = xy;
                 can->pd = pd;
                 can->w = w;
-                printf("seq(%c,%c) pd=%d w=%d\n", can->sup->x, can->sup->y, pd, w);
+                // printf("seq(%c,%c) pd=%d w=%d\n", can->sup->x, can->sup->y, pd, w);
                 can_list->cans[can_index] = can;
                 can_index++;
             }
