@@ -181,7 +181,7 @@ int max(int x, int y);
 int main(int argc, char *argv[])
 {
 
-    // freopen("test0.txt", "r", stdin);
+    freopen("test0.txt", "r", stdin);
 
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
@@ -587,7 +587,7 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
 {
     candidate_list_t *can_list = (candidate_list_t *)malloc(
         sizeof(candidate_list_t));
-    can_list->cans = (candidate_list_t *)malloc(
+    can_list->cans = (candidate_t **)malloc(
         sizeof(candidate_t *));
     int can_index = 0;
     int n_rows = sup_matrix->n_rows;
@@ -610,7 +610,7 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
             {
 
                 candidate_t *can = (candidate_t *)malloc(sizeof(can));
-                can_list->cans = (candidate_list_t *)realloc(
+                can_list->cans = (candidate_list_t **)realloc(
                     can_list->cans, sizeof(candidate_t *) * (can_index + 1));
                 can->sup = xy;
                 can->pd = pd;
