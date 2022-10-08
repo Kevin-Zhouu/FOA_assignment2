@@ -56,7 +56,7 @@
 #define WEIGHT_C 50
 #define SEQ_PD_THRESHOLD 70
 /* TYPE DEFINITIONS ----------------------------------------------------------*/
-typedef unsigned int action_t; // an action is identified by an integer
+typedef unsigned char action_t; // an action is identified by an integer
 
 typedef struct event event_t; // an event ...
 struct event
@@ -678,14 +678,9 @@ stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
         while (cur_event != NULL)
         {
             action_t cur_action = cur_event->actn;
-            if (cur_action == x)
+            if (cur_action == x || cur_action == y)
             {
-                cur_event->actn = 'X';
-                n_rm++;
-            }
-            if (cur_action == y)
-            {
-                cur_event->next = cur_event->next->next;
+                cur_event->actn = code;
                 n_rm++;
             }
             cur_event = cur_event->next;
