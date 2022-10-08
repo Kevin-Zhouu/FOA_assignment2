@@ -56,7 +56,7 @@
 #define WEIGHT_C 50
 #define SEQ_PD_THRESHOLD 70
 /* TYPE DEFINITIONS ----------------------------------------------------------*/
-typedef unsigned char action_t; // an action is identified by an integer
+typedef unsigned int action_t; // an action is identified by an integer
 
 typedef struct event event_t; // an event ...
 struct event
