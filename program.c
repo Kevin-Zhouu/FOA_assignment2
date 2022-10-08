@@ -182,7 +182,7 @@ int max(int x, int y);
 int main(int argc, char *argv[])
 {
 
-    freopen("test1.txt", "r", stdin);
+    freopen("test2.txt", "r", stdin);
 
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
@@ -719,7 +719,7 @@ stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
         while (cur_event != NULL)
         {
             action_t cur_action = cur_event->actn;
-            if ((prev_event->actn == x && cur_action == y) || prev_event->actn == y && cur_action == x)
+            if ((prev_event->actn == x && cur_action == y) || (prev_event->actn == y && cur_action == x))
             {
                 prev_event->actn = code;
                 prev_event->next = cur_event->next;
