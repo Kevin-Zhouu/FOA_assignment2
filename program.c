@@ -710,7 +710,9 @@ int calc_pd(sup_t *xy, sup_t *yx)
     // printf("calc_pd(%c,%c)=%d\n", xy->x, xy->y, xy->freq);
     // printf(" %d/", (DECIMAL_TO_PERCENT * abs(xy->freq - yx->freq)));
     // printf("%d", max(xy->freq, yx->freq));
-    int result = (DECIMAL_TO_PERCENT * abs(xy->freq - yx->freq)) /
+    int result = 0;
+    if (xy->freq > 0 || yx->freq > 0)
+        result = (DECIMAL_TO_PERCENT * abs(xy->freq - yx->freq)) /
                  max(xy->freq, yx->freq);
 
     // printf("=%d\n", result);
