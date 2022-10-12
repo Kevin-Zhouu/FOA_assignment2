@@ -675,9 +675,6 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
                 // printf("seq(%c,%c) pd=%d w=%d\n", can->sup->x, can->sup->y, pd, w);
                 can_list->cans[can_index] = can;
                 can_index++;
-                can_list = (candidate_list_t *)realloc(
-                    can_list,
-                    sizeof(candidate_list_t *) * can_index);
             }
             else
             {
