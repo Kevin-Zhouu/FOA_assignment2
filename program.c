@@ -706,19 +706,19 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
                 }
                 else
                 {
-                    if (is_seq)
-                    {
-                        w *= 100;
-                        add_candidate(can_list, &can_index, PATTERN_SEQ, pd, w, xy);
-                        free_xy = TRUE;
-                    }
-                    if (is_con)
-                    {
+                    // if (is_seq)
+                    // {
+                    //     w *= 100;
+                    //     add_candidate(can_list, &can_index, PATTERN_SEQ, pd, w, xy);
+                    //     free_xy = TRUE;
+                    // }
+                    // if (is_con)
+                    // {
 
-                        w *= 100;
-                        add_candidate(can_list, &can_index, PATTERN_CHC, pd, w, xy);
-                        free_xy = TRUE;
-                    }
+                    //     w *= 100;
+                    //     add_candidate(can_list, &can_index, PATTERN_CHC, pd, w, xy);
+                    //     free_xy = TRUE;
+                    // }
                 }
             }
             if (free_xy)
