@@ -60,6 +60,7 @@
 #define PATTERN_CHC 0
 #define PATTERN_CON 1
 #define PATTERN_SEQ 2
+#define CON_THRESHOLD 30
 /* TYPE DEFINITIONS ----------------------------------------------------------*/
 typedef unsigned int action_t; // an action is identified by an integer
 
@@ -192,7 +193,7 @@ int max(int x, int y);
 int main(int argc, char *argv[])
 {
 
-    freopen("test0.txt", "r", stdin);
+    // freopen("test0.txt", "r", stdin);
 
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
@@ -677,25 +678,51 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
                         sup_matrix->values[j][i]};
             int pd = calc_pd(xy, &yx);
             int w = calc_w(xy, &yx, pd);
+            int x_y_not_equal = (xy->x != xy->y);
+            int is_seq = pd > SEQ_PD_THRESHOLD &&
+                         xy->freq > yx.freq && x_y_not_equal;
+            int is_chc = (max(xy->freq, yx.freq) >
+                              (n_rows / DECIMAL_TO_PERCENT) &&
+                          x_y_not_equal);
+            int is_con = (x_y_not_equal && xy->freq > 0 && yx.freq > 0 &&
+                          pd < CON_THRESHOLD);
+            int free_xy = FALSE;
             if (in_stg_2 == FALSE)
             {
-                if (pd > SEQ_PD_THRESHOLD && xy->freq > yx.freq && xy->x != xy->y)
+                if (is_seq)
                 {
                     add_candidate(can_list, &can_index, PATTERN_SEQ, pd, w, xy);
-                }
-                else
-                {
-                    free(xy);
+                    free_xy = TRUE;
                 }
             }
             else
             {
                 // check for choice
-                if (max(xy->freq, yx.freq) > (n_rows / DECIMAL_TO_PERCENT))
+                if (is_chc)
                 {
                     w = n_rows * STAGE2_WEIGHT_COEFFICIENT;
+                    add_candidate(can_list, &can_index, PATTERN_CHC, pd, w, xy);
+                    free_xy = TRUE;
+                }
+                else
+                {
+                    if (is_seq)
+                    {
+                        w *= 100;
+                        add_candidate(can_list, &can_index, PATTERN_SEQ, pd, w, xy);
+                        free_xy = TRUE;
+                    }
+                    if (is_chc)
+                    {
+
+                        w *= 100;
+                        add_candidate(can_list, &can_index, PATTERN_CHC, pd, w, xy);
+                        free_xy = TRUE;
+                    }
                 }
             }
+            if (free_xy)
+                free(xy);
         }
     }
     qsort(can_list->cans, can_index, sizeof(candidate_t *), cmp_cans);
