@@ -513,8 +513,8 @@ void calc_stg_1(trace_stats_t *stats)
     int changing_to_stg2 = FALSE;
     while (can_list->num != 0)
     {
-        if (in_stg_2 == FALSE && (can_list->cans[0]->sup->x < 256 ||
-                                  can_list->cans[0]->sup->y < 256))
+        if (in_stg_2 == FALSE && (can_list->cans[0]->sup->x >= 256 ||
+                                  can_list->cans[0]->sup->y >= 256))
         {
             in_stg_2 = TRUE;
             changing_to_stg2 = TRUE;
