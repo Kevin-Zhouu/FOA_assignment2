@@ -673,22 +673,25 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
                         sup_matrix->values[j][i]};
             int pd = calc_pd(xy, &yx);
             int w = calc_w(xy, &yx, pd);
-            if (pd > SEQ_PD_THRESHOLD && xy->freq > yx.freq && xy->x != xy->y)
+            if (in_stg_2 == FALSE)
             {
+                if (pd > SEQ_PD_THRESHOLD && xy->freq > yx.freq && xy->x != xy->y)
+                {
 
-                candidate_t *can = (candidate_t *)malloc(sizeof(can));
-                can_list->cans = (candidate_t **)realloc(
-                    can_list->cans, sizeof(candidate_t *) * (can_index + 1));
-                can->sup = xy;
-                can->pd = pd;
-                can->w = w;
-                printf("sup(%c,%c) pd=%d w=%d\n", can->sup->x, can->sup->y, pd, w);
-                can_list->cans[can_index] = can;
-                can_index++;
-            }
-            else
-            {
-                free(xy);
+                    candidate_t *can = (candidate_t *)malloc(sizeof(can));
+                    can_list->cans = (candidate_t **)realloc(
+                        can_list->cans, sizeof(candidate_t *) * (can_index + 1));
+                    can->sup = xy;
+                    can->pd = pd;
+                    can->w = w;
+                    printf("sup(%c,%c) pd=%d w=%d\n", can->sup->x, can->sup->y, pd, w);
+                    can_list->cans[can_index] = can;
+                    can_index++;
+                }
+                else
+                {
+                    free(xy);
+                }
             }
         }
     }
