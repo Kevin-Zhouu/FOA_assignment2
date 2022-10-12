@@ -691,13 +691,13 @@ void print_seq(sup_t *sup)
     int x = (int)sup->x;
     int y = (int)sup->y;
     if (x < 256 && y < 256)
-        printf("SEQ(%c,%c) ", x, y);
+        printf("SEQ(%c,%c)", x, y);
     else if (x >= 256 && y < 256)
-        printf("SEQ(%d,%c) ", x, y);
+        printf("SEQ(%d,%c)", x, y);
     else if (x < 256 && y >= 256)
-        printf("SEQ(%c,%d) ", x, y);
+        printf("SEQ(%c,%d)", x, y);
     else
-        printf("SEQ(%d,%d) ", x, y);
+        printf("SEQ(%d,%d)", x, y);
 }
 int cmp_cans(const void *a, const void *b)
 {
