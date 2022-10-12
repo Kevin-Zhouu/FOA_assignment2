@@ -745,7 +745,7 @@ candidate_t *add_candidate(candidate_list_t *can_list, int *can_index,
     can->sup = xy;
     can->pd = pd;
     can->w = w;
-    // printf("sup(%c,%c) pd=%d w=%d\n", can->sup->x, can->sup->y, pd, w);
+    printf("sup(%c,%c) pd=%d w=%d\n", can->sup->x, can->sup->y, pd, w);
     can_list->cans[*can_index] = can;
     *can_index = *can_index + 1;
     return can;
