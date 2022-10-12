@@ -125,10 +125,10 @@ typedef struct
 } sup_matrix_t;        // matrix of distinct events and their support
 typedef struct
 {
-    int type; // either CHC, CON, SEQ defined as 0, 1, 2
     sup_t *sup;
-    int pd; // percentage difference of the support
-    int w;  // weight of the support
+    int pd;   // percentage difference of the support
+    int w;    // weight of the support
+    int type; // either CHC, CON, SEQ defined as 0, 1, 2
 } candidate_t;
 typedef struct
 {
@@ -642,7 +642,7 @@ int find_row_index(action_t action, action_t *rows, int total_tows)
 candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
 {
     candidate_list_t *can_list = (candidate_list_t *)malloc(
-        sizeof(candidate_list_t));
+        sizeof(candidate_list_t *));
     can_list->cans = (candidate_t **)malloc(
         sizeof(can_list->cans));
     int can_index = 0;
@@ -675,6 +675,9 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
                 // printf("seq(%c,%c) pd=%d w=%d\n", can->sup->x, can->sup->y, pd, w);
                 can_list->cans[can_index] = can;
                 can_index++;
+                can_list = (candidate_list_t *)realloc(
+                    can_list,
+                    sizeof(candidate_list_t *) * can_index);
             }
             else
             {
