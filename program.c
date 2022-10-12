@@ -507,7 +507,7 @@ int add_event_freq(event_freq_t *event_freq_list, int tot_events,
 void calc_stg_1(trace_stats_t *stats)
 {
     sup_matrix_t *sup_matrix = generate_evt_matrix(stats->trace_list, stats);
-    candidate_list_t *can_list = find_pattern(sup_matrix);
+    candidate_list_t *can_list = find_pattern(sup_matrix, TRUE);
     int i = 0;
     while (can_list->num != 0 && can_list->cans[0]->sup->x < 256 &&
            can_list->cans[0]->sup->y < 256)
@@ -523,7 +523,7 @@ void calc_stg_1(trace_stats_t *stats)
         print_event_freq(stats);
         sup_matrix = generate_evt_matrix(stats->trace_list, stats);
         // print_all_trace(stats->trace_list);
-        can_list = find_pattern(sup_matrix);
+        can_list = find_pattern(sup_matrix, TRUE);
 
         i++;
     }
