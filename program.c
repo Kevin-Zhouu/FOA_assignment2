@@ -54,6 +54,7 @@
 #define FALSE 0
 #define DECIMAL_TO_PERCENT 100
 #define WEIGHT_C 50
+#define STAGE2_WEIGHT_COEFFICIENT 100
 #define SEQ_PD_THRESHOLD 70
 #define DURING_STAGE -1
 #define PATTERN_CHC 0
@@ -165,6 +166,9 @@ void print_stg_0(trace_stats_t *stats);
 void calc_stg_1(trace_stats_t *stats);
 int **init_matrix(int rows, int columns);
 sup_matrix_t *generate_evt_matrix(trace_list_t *log, trace_stats_t *stats);
+candidate_t *add_candidate(candidate_list_t *can_list, int *can_index,
+                           int pattern,
+                           int pd, int w, sup_t *xy);
 candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2);
 stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list, action_t code);
 void print_matrix(sup_matrix_t *sup_matrix, int stage);
@@ -677,20 +681,19 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
             {
                 if (pd > SEQ_PD_THRESHOLD && xy->freq > yx.freq && xy->x != xy->y)
                 {
-
-                    candidate_t *can = (candidate_t *)malloc(sizeof(can));
-                    can_list->cans = (candidate_t **)realloc(
-                        can_list->cans, sizeof(candidate_t *) * (can_index + 1));
-                    can->sup = xy;
-                    can->pd = pd;
-                    can->w = w;
-                    printf("sup(%c,%c) pd=%d w=%d\n", can->sup->x, can->sup->y, pd, w);
-                    can_list->cans[can_index] = can;
-                    can_index++;
+                    add_candidate(can_list, &can_index, PATTERN_SEQ, pd, w, xy);
                 }
                 else
                 {
                     free(xy);
+                }
+            }
+            else
+            {
+                // check for choice
+                if (max(xy->freq, yx.freq) > (n_rows / DECIMAL_TO_PERCENT))
+                {
+                    w = n_rows * STAGE2_WEIGHT_COEFFICIENT;
                 }
             }
         }
@@ -704,6 +707,20 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
         // printf("pd=%d w=%d\n", can_list->cans[i]->pd, can_list->cans[i]->w);
     }
     return can_list;
+}
+candidate_t *add_candidate(candidate_list_t *can_list, int *can_index,
+                           int pattern,
+                           int pd, int w, sup_t *xy)
+{
+    candidate_t *can = (candidate_t *)malloc(sizeof(can));
+    can_list->cans = (candidate_t **)realloc(
+        can_list->cans, sizeof(candidate_t *) * (*can_index + 1));
+    can->sup = xy;
+    can->pd = pd;
+    can->w = w;
+    printf("sup(%c,%c) pd=%d w=%d\n", can->sup->x, can->sup->y, pd, w);
+    can_list->cans[*can_index] = can;
+    *can_index++;
 }
 void print_seq(sup_t *sup)
 {
