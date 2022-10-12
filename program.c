@@ -509,9 +509,11 @@ void calc_stg_1(trace_stats_t *stats)
     sup_matrix_t *sup_matrix = generate_evt_matrix(stats->trace_list, stats);
     candidate_list_t *can_list = find_pattern(sup_matrix, TRUE);
     int i = 0;
-    while (can_list->num != 0 && can_list->cans[0]->sup->x < 256 &&
-           can_list->cans[0]->sup->y < 256)
+    int in_stg_1 = 0;
+    while (can_list->num != 0)
     {
+        in_stg_1 = (can_list->cans[0]->sup->x < 256 &&
+                    can_list->cans[0]->sup->y < 256);
         if (i == 0)
             print_matrix(sup_matrix, 1);
         else
@@ -523,7 +525,7 @@ void calc_stg_1(trace_stats_t *stats)
         print_event_freq(stats);
         sup_matrix = generate_evt_matrix(stats->trace_list, stats);
         // print_all_trace(stats->trace_list);
-        can_list = find_pattern(sup_matrix, TRUE);
+        can_list = find_pattern(sup_matrix, in_stg_1);
 
         i++;
     }
