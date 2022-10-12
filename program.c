@@ -56,9 +56,9 @@
 #define WEIGHT_C 50
 #define SEQ_PD_THRESHOLD 70
 #define DURING_STAGE -1
-#define CHC 0
-#define CON 1
-#define SEQ 2
+#define PATTERN_CHC 0
+#define PATTERN_CON 1
+#define PATTERN_SEQ 2
 /* TYPE DEFINITIONS ----------------------------------------------------------*/
 typedef unsigned int action_t; // an action is identified by an integer
 
@@ -94,50 +94,49 @@ typedef struct
 {
     action_t action;
     int freq;
-} event_freq_t;          // each node of event_freq, containing action and it's freq
+} event_freq_t;
 typedef action_t **DF_t; // a directly follows relation over actions
 typedef struct
 {
-    int n_dis_events;         // the number of distinct events
-    int n_dis_traces;         // the number of distinct traces
-    int n_events;             // the number of total events
-    int n_traces;             // the number of total traces
-    trace_list_t *trace_list; // a list of all traces
-    trace_t **most_freq_trc;  // list of traces with highest frequency
-    int max_freq;             // the maximum frequency of a trace
-    int num_max_freq_trcs;    // number of distinct traces that has highest freq
-    event_freq_t *event_freq; // list of events with their frequency
-    log_t *log;               // the event log
+    int n_dis_events; // the number of distinct events
+    int n_dis_traces; // the number of distinct
+    int n_events;     // the number of
+    int n_traces;     // the number of
+    trace_list_t *trace_list;
+    trace_t **most_freq_trc;
+    int max_freq;
+    int num_max_freq_trcs;
+    event_freq_t *event_freq;
+    log_t *log;
 } trace_stats_t;
 typedef struct
 {
     action_t x;
     action_t y;
     int freq;
-} sup_t; // a support of two actions and their frequency
+} sup_t;
 typedef struct
 {
     int **values;      // two dimensional array of int
-    action_t *rows;    // actions for the rows
-    action_t *columns; // actions for the columns
+    action_t *rows;    // action for corresponidng rows
+    action_t *columns; // action for corresponding columns
     int n_rows;        // number of rows
     int n_columns;     // number of columns
-} sup_matrix_t;        // matrix of distinct events and their support
+} sup_matrix_t;
 typedef struct
 {
     sup_t *sup;
-    int pd;   // percentage difference of the support
-    int w;    // weight of the support
-    int type; // either CHC, CON, SEQ defined as 0, 1, 2
+    int pd;
+    int w;
+    int pattern;
 } candidate_t;
 typedef struct
 {
-    candidate_t **cans; // list of candidates
-    int num;            // total number of candidates
+    candidate_t **cans;
+    int num;
 } candidate_list_t;
 typedef struct
 {
-    int type; // either CHC, CON, SEQ defined as 0, 1, 2
     sup_t seq;
     action_t code;
     int n_rm;
@@ -189,7 +188,7 @@ int max(int x, int y);
 int main(int argc, char *argv[])
 {
 
-    freopen("test1.txt", "r", stdin);
+    // freopen("test1.txt", "r", stdin);
 
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
@@ -642,7 +641,7 @@ int find_row_index(action_t action, action_t *rows, int total_tows)
 candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
 {
     candidate_list_t *can_list = (candidate_list_t *)malloc(
-        sizeof(candidate_list_t *));
+        sizeof(candidate_list_t));
     can_list->cans = (candidate_t **)malloc(
         sizeof(can_list->cans));
     int can_index = 0;
@@ -671,7 +670,6 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
                 can->sup = xy;
                 can->pd = pd;
                 can->w = w;
-                can->type = 2;
                 // printf("seq(%c,%c) pd=%d w=%d\n", can->sup->x, can->sup->y, pd, w);
                 can_list->cans[can_index] = can;
                 can_index++;
@@ -707,7 +705,6 @@ void print_seq(sup_t *sup)
 }
 int cmp_cans(const void *a, const void *b)
 {
-    // printf("comparing:%c %s",can_a->sup->x);
     candidate_t *can_a = *(candidate_t **)a;
     candidate_t *can_b = *(candidate_t **)b;
     return can_b->w - can_a->w;
@@ -739,7 +736,6 @@ stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
     action_t y = cur_can->sup->y;
     trace_list_t *log = stats->trace_list;
     stg1_stats_t stg2_stats = {
-        2,
         *(cur_can->sup),
         code,
         0};
