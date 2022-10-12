@@ -686,13 +686,13 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
                           x_y_not_equal);
             int is_con = (x_y_not_equal && xy->freq > 0 && yx.freq > 0 &&
                           pd < CON_THRESHOLD);
-            int free_xy = FALSE;
+            int free_xy = TRUE;
             if (in_stg_2 == FALSE)
             {
                 if (is_seq)
                 {
                     add_candidate(can_list, &can_index, PATTERN_SEQ, pd, w, xy);
-                    free_xy = TRUE;
+                    free_xy = FALSE;
                 }
             }
             else
@@ -702,7 +702,7 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
                 {
                     w = n_rows * STAGE2_WEIGHT_COEFFICIENT;
                     add_candidate(can_list, &can_index, PATTERN_CHC, pd, w, xy);
-                    free_xy = TRUE;
+                    free_xy = FALSE;
                 }
                 else
                 {
@@ -710,14 +710,14 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
                     // {
                     //     w *= 100;
                     //     add_candidate(can_list, &can_index, PATTERN_SEQ, pd, w, xy);
-                    //     free_xy = TRUE;
+                    //     free_xy = FALSE;
                     // }
                     // if (is_con)
                     // {
 
                     //     w *= 100;
                     //     add_candidate(can_list, &can_index, PATTERN_CHC, pd, w, xy);
-                    //     free_xy = TRUE;
+                    //     free_xy = FALSE;
                     // }
                 }
             }
