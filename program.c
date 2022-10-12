@@ -188,7 +188,7 @@ int max(int x, int y);
 int main(int argc, char *argv[])
 {
 
-    // freopen("test1.txt", "r", stdin);
+    freopen("test0.txt", "r", stdin);
 
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
@@ -509,13 +509,21 @@ void calc_stg_1(trace_stats_t *stats)
     sup_matrix_t *sup_matrix = generate_evt_matrix(stats->trace_list, stats);
     candidate_list_t *can_list = find_pattern(sup_matrix, TRUE);
     int i = 0;
-    int in_stg_1 = 0;
+    int in_stg_2 = FALSE;
+    int changing_to_stg2 = FALSE;
     while (can_list->num != 0)
     {
-        in_stg_1 = (can_list->cans[0]->sup->x < 256 &&
-                    can_list->cans[0]->sup->y < 256);
+        if (in_stg_2 == FALSE && (can_list->cans[0]->sup->x < 256 &&
+                                  can_list->cans[0]->sup->y < 256))
+        {
+            in_stg_2 = TRUE;
+            changing_to_stg2 = TRUE;
+        }
+
         if (i == 0)
             print_matrix(sup_matrix, 1);
+        else if (changing_to_stg2 == TRUE)
+            print_matrix(sup_matrix, 2);
         else
             print_matrix(sup_matrix, DURING_STAGE);
         stg1_stats_t stg1_stats = del_seq(stats, can_list, (action_t)256 + i);
@@ -524,11 +532,13 @@ void calc_stg_1(trace_stats_t *stats)
         calc_evt_stats(stats);
         print_event_freq(stats);
         sup_matrix = generate_evt_matrix(stats->trace_list, stats);
-        // print_all_trace(stats->trace_list);
-        can_list = find_pattern(sup_matrix, in_stg_1);
-
+        print_all_trace(stats->trace_list);
+        can_list = find_pattern(sup_matrix, in_stg_2);
+        changing_to_stg2 = FALSE;
         i++;
     }
+
+    print_matrix(sup_matrix, DURING_STAGE);
 }
 sup_matrix_t *generate_evt_matrix(trace_list_t *log, trace_stats_t *stats)
 {
@@ -672,7 +682,7 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
                 can->sup = xy;
                 can->pd = pd;
                 can->w = w;
-                // printf("seq(%c,%c) pd=%d w=%d\n", can->sup->x, can->sup->y, pd, w);
+                printf("sup(%c,%c) pd=%d w=%d\n", can->sup->x, can->sup->y, pd, w);
                 can_list->cans[can_index] = can;
                 can_index++;
             }
