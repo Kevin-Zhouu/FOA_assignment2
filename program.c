@@ -164,8 +164,8 @@ void print_stg_0(trace_stats_t *stats);
 
 void calc_stg_1(trace_stats_t *stats);
 int **init_matrix(int rows, int columns);
-sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats);
-candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix);
+sup_matrix_t *generate_evt_matrix(trace_list_t *log, trace_stats_t *stats);
+candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2);
 stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list, action_t code);
 void print_matrix(sup_matrix_t *sup_matrix, int stage);
 int calc_pd(sup_t *xy, sup_t *yx);
@@ -506,8 +506,8 @@ int add_event_freq(event_freq_t *event_freq_list, int tot_events,
 }
 void calc_stg_1(trace_stats_t *stats)
 {
-    sup_matrix_t *sup_matrix = generate_seq_matrix(stats->trace_list, stats);
-    candidate_list_t *can_list = find_potential_seq(sup_matrix);
+    sup_matrix_t *sup_matrix = generate_evt_matrix(stats->trace_list, stats);
+    candidate_list_t *can_list = find_pattern(sup_matrix);
     int i = 0;
     while (can_list->num != 0 && can_list->cans[0]->sup->x < 256 &&
            can_list->cans[0]->sup->y < 256)
@@ -521,14 +521,14 @@ void calc_stg_1(trace_stats_t *stats)
         print_stg2(&stg1_stats);
         calc_evt_stats(stats);
         print_event_freq(stats);
-        sup_matrix = generate_seq_matrix(stats->trace_list, stats);
+        sup_matrix = generate_evt_matrix(stats->trace_list, stats);
         // print_all_trace(stats->trace_list);
-        can_list = find_potential_seq(sup_matrix);
+        can_list = find_pattern(sup_matrix);
 
         i++;
     }
 }
-sup_matrix_t *generate_seq_matrix(trace_list_t *log, trace_stats_t *stats)
+sup_matrix_t *generate_evt_matrix(trace_list_t *log, trace_stats_t *stats)
 {
 
     sup_matrix_t *sup_matrix = (sup_matrix_t *)malloc(sizeof(*sup_matrix));
@@ -638,7 +638,7 @@ int find_row_index(action_t action, action_t *rows, int total_tows)
     }
     return -1;
 }
-candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
+candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
 {
     candidate_list_t *can_list = (candidate_list_t *)malloc(
         sizeof(candidate_list_t));
