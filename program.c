@@ -532,7 +532,7 @@ void calc_stg_1(trace_stats_t *stats)
         calc_evt_stats(stats);
         print_event_freq(stats);
         sup_matrix = generate_evt_matrix(stats->trace_list, stats);
-        print_all_trace(stats->trace_list);
+        // print_all_trace(stats->trace_list);
         can_list = find_pattern(sup_matrix, in_stg_2);
         changing_to_stg2 = FALSE;
         i++;
