@@ -671,6 +671,7 @@ candidate_list_t *find_potential_seq(sup_matrix_t *sup_matrix)
                 can->sup = xy;
                 can->pd = pd;
                 can->w = w;
+                can->type = 2;
                 // printf("seq(%c,%c) pd=%d w=%d\n", can->sup->x, can->sup->y, pd, w);
                 can_list->cans[can_index] = can;
                 can_index++;
@@ -706,6 +707,7 @@ void print_seq(sup_t *sup)
 }
 int cmp_cans(const void *a, const void *b)
 {
+    // printf("comparing:%c %s",can_a->sup->x);
     candidate_t *can_a = *(candidate_t **)a;
     candidate_t *can_b = *(candidate_t **)b;
     return can_b->w - can_a->w;
