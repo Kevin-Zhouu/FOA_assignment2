@@ -56,6 +56,9 @@
 #define WEIGHT_C 50
 #define SEQ_PD_THRESHOLD 70
 #define DURING_STAGE -1
+#define CHC 0
+#define CON 1
+#define SEQ 2
 /* TYPE DEFINITIONS ----------------------------------------------------------*/
 typedef unsigned int action_t; // an action is identified by an integer
 
@@ -91,48 +94,50 @@ typedef struct
 {
     action_t action;
     int freq;
-} event_freq_t;
+} event_freq_t;          // each node of event_freq, containing action and it's freq
 typedef action_t **DF_t; // a directly follows relation over actions
 typedef struct
 {
-    int n_dis_events; // the number of distinct events
-    int n_dis_traces; // the number of distinct
-    int n_events;     // the number of
-    int n_traces;     // the number of
-    trace_list_t *trace_list;
-    trace_t **most_freq_trc;
-    int max_freq;
-    int num_max_freq_trcs;
-    event_freq_t *event_freq;
-    log_t *log;
+    int n_dis_events;         // the number of distinct events
+    int n_dis_traces;         // the number of distinct traces
+    int n_events;             // the number of total events
+    int n_traces;             // the number of total traces
+    trace_list_t *trace_list; // a list of all traces
+    trace_t **most_freq_trc;  // list of traces with highest frequency
+    int max_freq;             // the maximum frequency of a trace
+    int num_max_freq_trcs;    // number of distinct traces that has highest freq
+    event_freq_t *event_freq; // list of events with their frequency
+    log_t *log;               // the event log
 } trace_stats_t;
 typedef struct
 {
     action_t x;
     action_t y;
     int freq;
-} sup_t;
+} sup_t; // a support of two actions and their frequency
 typedef struct
 {
     int **values;      // two dimensional array of int
-    action_t *rows;    // action for corresponidng rows
-    action_t *columns; // action for corresponding columns
+    action_t *rows;    // actions for the rows
+    action_t *columns; // actions for the columns
     int n_rows;        // number of rows
     int n_columns;     // number of columns
-} sup_matrix_t;
+} sup_matrix_t;        // matrix of distinct events and their support
 typedef struct
 {
+    int type; // either CHC, CON, SEQ defined as 0, 1, 2
     sup_t *sup;
-    int pd;
-    int w;
+    int pd; // percentage difference of the support
+    int w;  // weight of the support
 } candidate_t;
 typedef struct
 {
-    candidate_t **cans;
-    int num;
+    candidate_t **cans; // list of candidates
+    int num;            // total number of candidates
 } candidate_list_t;
 typedef struct
 {
+    int type; // either CHC, CON, SEQ defined as 0, 1, 2
     sup_t seq;
     action_t code;
     int n_rm;
@@ -732,6 +737,7 @@ stg1_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
     action_t y = cur_can->sup->y;
     trace_list_t *log = stats->trace_list;
     stg1_stats_t stg2_stats = {
+        2,
         *(cur_can->sup),
         code,
         0};
