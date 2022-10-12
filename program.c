@@ -507,7 +507,7 @@ int add_event_freq(event_freq_t *event_freq_list, int tot_events,
 void calc_stg_1(trace_stats_t *stats)
 {
     sup_matrix_t *sup_matrix = generate_evt_matrix(stats->trace_list, stats);
-    candidate_list_t *can_list = find_pattern(sup_matrix, TRUE);
+    candidate_list_t *can_list = find_pattern(sup_matrix, FALSE);
     int i = 0;
     int in_stg_2 = FALSE;
     int changing_to_stg2 = FALSE;
