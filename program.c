@@ -520,22 +520,24 @@ void calc_stg_1(trace_stats_t *stats)
     candidate_list_t *can_list;
     int i = 0;
     int in_stg_2 = FALSE;
-    int changing_to_stg2 = FALSE;
+    int show_stg_title = FALSE;
     while (i == 0 || (can_list->num != 0 && sup_matrix->n_rows > 2))
     {
         sup_matrix = generate_evt_matrix(stats->trace_list, stats);
         if (i == 0)
             print_matrix(sup_matrix, 1);
-        else if (changing_to_stg2 == TRUE)
+        else if (show_stg_title == TRUE)
             print_matrix(sup_matrix, 2);
         else
             print_matrix(sup_matrix, DURING_STAGE);
 
         can_list = find_pattern(sup_matrix, in_stg_2);
+
+        show_stg_title = FALSE;
         if (in_stg_2 == FALSE && (can_list->cans[0]->sup->x >= 256 || can_list->cans[0]->sup->y >= 256))
         {
             in_stg_2 = TRUE;
-            changing_to_stg2 = TRUE;
+            show_stg_title = TRUE;
             can_list = find_pattern(sup_matrix, in_stg_2);
         }
         pattern_stats_t pattern_stats = del_seq(stats, can_list, (action_t)256 + i);
@@ -543,9 +545,6 @@ void calc_stg_1(trace_stats_t *stats)
         calc_evt_stats(stats);
         print_event_freq(stats);
         // print_all_trace(stats->trace_list);
-
-        changing_to_stg2 = FALSE;
-
         i++;
     }
     // print_matrix(sup_matrix, DURING_STAGE);
