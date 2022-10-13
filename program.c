@@ -196,7 +196,7 @@ int max(int x, int y);
 int main(int argc, char *argv[])
 {
 
-    freopen("test2.txt", "r", stdin);
+    freopen("test0.txt", "r", stdin);
 
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
@@ -537,19 +537,18 @@ void calc_stg_1(trace_stats_t *stats)
             in_stg_2 = TRUE;
             changing_to_stg2 = TRUE;
             can_list = find_pattern(sup_matrix, in_stg_2);
-            printf("stage 2!!");
         }
         pattern_stats_t pattern_stats = del_seq(stats, can_list, (action_t)256 + i);
         print_stg2(&pattern_stats);
         calc_evt_stats(stats);
         print_event_freq(stats);
-        print_all_trace(stats->trace_list);
+        // print_all_trace(stats->trace_list);
 
         changing_to_stg2 = FALSE;
 
         i++;
     }
-    print_matrix(sup_matrix, DURING_STAGE);
+    // print_matrix(sup_matrix, DURING_STAGE);
     printf("==THE END============================");
 }
 candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
@@ -561,8 +560,8 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
     int can_index = 0;
     int n_rows = sup_matrix->n_rows;
 
-    print_matrix(sup_matrix, DURING_STAGE);
-    // looping over the rows
+    // print_matrix(sup_matrix, DURING_STAGE);
+    //  looping over the rows
     for (int i = 0; i < n_rows; i++)
     {
         // looping over the columns
@@ -637,8 +636,8 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
     can_list->num = can_index;
     for (int i = 0; i < can_index; i++)
     {
-        print_pattern(can_list->cans[i]->pattern, can_list->cans[i]->sup);
-        printf("pd=%d w=%d\n", can_list->cans[i]->pd, can_list->cans[i]->w);
+        // print_pattern(can_list->cans[i]->pattern, can_list->cans[i]->sup);
+        // printf("pd=%d w=%d\n", can_list->cans[i]->pd, can_list->cans[i]->w);
     }
     return can_list;
 }
@@ -678,11 +677,11 @@ sup_matrix_t *generate_evt_matrix(trace_list_t *log, trace_stats_t *stats)
     }
     sup_matrix->n_events = num_events;
 
-    for (int i = 0; i < row_index; i++)
-    {
-        printf("row%d:%d ", i, sup_matrix->rows[i]);
-    }
-    print_all_trace(log);
+    // for (int i = 0; i < row_index; i++)
+    // {
+    //     printf("row%d:%d ", i, sup_matrix->rows[i]);
+    // }
+    // print_all_trace(log);
     sup_matrix->rows = (action_t *)realloc(sup_matrix->rows,
                                            sizeof(action_t) * row_index);
     // sort the rows
@@ -696,7 +695,7 @@ sup_matrix_t *generate_evt_matrix(trace_list_t *log, trace_stats_t *stats)
     sup_matrix->values = init_matrix(row_index, row_index);
     // looping through all traces and record the sup frequency into
     // the matrix
-    printf("row_index:%d", row_index);
+    // printf("row_index:%d", row_index);
     for (int i = 0; i < log->num_traces; i++)
     {
         // looping through all events in this trace
