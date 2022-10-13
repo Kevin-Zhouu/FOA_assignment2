@@ -521,7 +521,7 @@ void calc_stg_1(trace_stats_t *stats)
     int i = 0;
     int in_stg_2 = FALSE;
     int changing_to_stg2 = FALSE;
-    while (can_list->num != 0 && sup_matrix->n_rows > 2)
+    while (i == 0 || (can_list->num != 0 && sup_matrix->n_rows > 2))
     {
         sup_matrix = generate_evt_matrix(stats->trace_list, stats);
         if (i == 0)
@@ -705,7 +705,6 @@ sup_matrix_t *generate_evt_matrix(trace_list_t *log, trace_stats_t *stats)
         while (cur_event != NULL)
         {
             // not the last event, add frequency
-            action_t prev_action = prev_event->actn;
             int x_index = find_row_index(prev_event->actn,
                                          sup_matrix->rows, row_index);
             int y_index = find_row_index(cur_event->actn,
