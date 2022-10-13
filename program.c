@@ -195,10 +195,11 @@ void print_trace(trace_t *list);
 void print_all_trace(trace_list_t *trace_list);
 int max(int x, int y);
 void free_stats(trace_stats_t *stats);
+void free_can_list(candidate_list_t *can_list);
 int main(int argc, char *argv[])
 {
 
-    // freopen("test0.txt", "r", stdin);
+    freopen("test0.txt", "r", stdin);
 
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
@@ -206,13 +207,13 @@ int main(int argc, char *argv[])
     trace_stats_t stats = calc_stg_0(trace_list);
     calc_stg_1_2(&stats);
     // print_all_trace(trace_list);
+    free_stats(&stats);
     for (int i = 0; i < trace_list->num_traces; i++)
     {
         free_list(trace_list->traces[i]);
     }
 
     free(trace_list);
-    free_stats(&stats);
     return EXIT_SUCCESS; // remember, algorithms are fun!!!
 }
 /***************************************************************
@@ -366,11 +367,8 @@ void free_stats(trace_stats_t *stats)
     assert(stats != NULL);
     free(stats->most_freq_trc);
     free(stats->event_freq);
-    free(stats->trace_list->traces);
-    free(stats->trace_list);
     free(stats->log->trcs);
     free(stats->log);
-    free(stats);
 }
 trace_stats_t *calc_trc_stats(trace_stats_t *stats)
 {
@@ -536,7 +534,7 @@ void calc_stg_1_2(trace_stats_t *stats)
     while (i == 0 || (can_list->num != 0 && sup_matrix->n_rows > 2))
     {
         sup_matrix = generate_evt_matrix(stats->trace_list, stats);
-
+        free_can_list(can_list);
         can_list = find_pattern(sup_matrix, in_stg_2);
 
         show_stg_title = FALSE;
@@ -545,6 +543,7 @@ void calc_stg_1_2(trace_stats_t *stats)
         {
             in_stg_2 = TRUE;
             show_stg_title = TRUE;
+            free_can_list(can_list);
             can_list = find_pattern(sup_matrix, in_stg_2);
         }
         if (i == 0)
@@ -561,6 +560,11 @@ void calc_stg_1_2(trace_stats_t *stats)
         i++;
     }
     printf("==THE END============================\n");
+}
+void free_can_list(candidate_list_t *can_list)
+{
+    free(can_list->cans);
+    free(can_list);
 }
 candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
 {
