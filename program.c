@@ -196,7 +196,7 @@ int max(int x, int y);
 int main(int argc, char *argv[])
 {
 
-    freopen("test0.txt", "r", stdin);
+    // freopen("test0.txt", "r", stdin);
 
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
