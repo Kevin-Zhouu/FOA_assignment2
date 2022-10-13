@@ -537,6 +537,7 @@ void calc_stg_1(trace_stats_t *stats)
             in_stg_2 = TRUE;
             changing_to_stg2 = TRUE;
             can_list = find_pattern(sup_matrix, in_stg_2);
+            printf("stage 2!!");
         }
         pattern_stats_t pattern_stats = del_seq(stats, can_list, (action_t)256 + i);
         print_stg2(&pattern_stats);
