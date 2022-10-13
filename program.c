@@ -196,7 +196,7 @@ int max(int x, int y);
 int main(int argc, char *argv[])
 {
 
-    freopen("test1.txt", "r", stdin);
+    freopen("test2.txt", "r", stdin);
 
     trace_list_t *trace_list = read_all_traces();
     sort_traces(trace_list);
@@ -892,13 +892,11 @@ pattern_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
             {
                 cur_event->actn = code;
                 prev_event->next = cur_event->next;
-                prev_event = cur_event->next;
                 n_rm++;
-                break;
+                // break;
             }
             else
             {
-
                 prev_event = cur_event;
             }
             cur_event = cur_event->next;
