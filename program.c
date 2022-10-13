@@ -579,16 +579,16 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
             int x_y_not_equal = (xy->x != xy->y);
             int is_seq = pd > SEQ_PD_THRESHOLD &&
                          xy->freq > yx.freq && x_y_not_equal;
-            int is_chc = (max(xy->freq, yx.freq) >
+            int is_chc = (max(xy->freq, yx.freq) <=
                               (n_rows / DECIMAL_TO_PERCENT) &&
                           x_y_not_equal);
             int is_con = (x_y_not_equal && xy->freq > 0 && yx.freq > 0 &&
                           pd < CON_THRESHOLD);
             int free_xy = TRUE;
-            printf("chc value:%d %d\n", max(xy->freq, yx.freq),
-                   (n_rows / DECIMAL_TO_PERCENT));
+            // printf("N:%d chc value:%d %d\n", sup_matrix->n_events, max(xy->freq, yx.freq),
+            //        (sup_matrix->n_events / DECIMAL_TO_PERCENT));
 
-            printf("comparing %c %c", xy->x, xy->y);
+            // printf("comparing %c %c", xy->x, xy->y);
             if (in_stg_2 == FALSE)
             {
                 if (is_seq)
@@ -618,7 +618,7 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
                     {
 
                         w *= 100;
-                        add_candidate(can_list, &can_index, PATTERN_CHC, pd, w, xy);
+                        add_candidate(can_list, &can_index, PATTERN_CON, pd, w, xy);
                         free_xy = FALSE;
                     }
                 }
@@ -646,6 +646,7 @@ sup_matrix_t *generate_evt_matrix(trace_list_t *log, trace_stats_t *stats)
     sup_matrix->columns = (action_t *)malloc(sizeof(action_t) *
                                              stats->n_dis_events);
     int row_index = 0;
+    int num_events = 0;
     // looping through all traces
     for (int i = 0; i < log->num_traces; i++)
     {
@@ -656,6 +657,7 @@ sup_matrix_t *generate_evt_matrix(trace_list_t *log, trace_stats_t *stats)
         {
             // not the last event, find if the event exists in the row array
             // printf();
+            num_events++;
             action_t cur_action = cur_event->actn;
             if (find_row_index(cur_action, sup_matrix->rows,
                                row_index) == NOT_FOUND)
@@ -669,7 +671,7 @@ sup_matrix_t *generate_evt_matrix(trace_list_t *log, trace_stats_t *stats)
             cur_event = cur_event->next;
         }
     }
-    // row_index++;
+    sup_matrix->n_events = num_events;
 
     for (int i = 0; i < row_index; i++)
     {
