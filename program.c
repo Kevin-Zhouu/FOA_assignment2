@@ -859,10 +859,7 @@ pattern_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
         code,
         0};
     int n_rm = 0;
-    // if (x >= 256 || y >= 256)
-    // {
-    //     return pattern_stats_t
-    // }
+    // asbtract pattern to assigned code
     for (int i = 0; i < log->num_traces; i++)
     {
         trace_t *cur_trace = log->traces[i];
@@ -895,10 +892,15 @@ pattern_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
             {
                 cur_event->actn = code;
                 prev_event->next = cur_event->next;
+                prev_event = cur_event->next;
                 n_rm++;
                 break;
             }
-            prev_event = cur_event;
+            else
+            {
+
+                prev_event = cur_event;
+            }
             cur_event = cur_event->next;
             j++;
         }
