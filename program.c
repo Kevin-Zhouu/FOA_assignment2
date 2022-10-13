@@ -196,6 +196,7 @@ void print_all_trace(trace_list_t *trace_list);
 int max(int x, int y);
 void free_stats(trace_stats_t *stats);
 void free_can_list(candidate_list_t *can_list);
+void free_sup_matrix(sup_matrix_t *sup_matrix);
 int main(int argc, char *argv[])
 {
 
@@ -565,6 +566,22 @@ void free_can_list(candidate_list_t *can_list)
 {
     free(can_list->cans);
     free(can_list);
+}
+void free_sup_matrix(sup_matrix_t *sup_matrix)
+{
+    for (int i = 0; i < sup_matrix->n_rows; i++)
+    {
+        free(sup_matrix->rows[i]);
+        free(sup_matrix->columns[i]);
+        for (int j = 0; j < sup_matrix->n_rows; j++)
+        {
+            free(sup_matrix->values[i][j]);
+        }
+        free(sup_matrix->values[i]);
+    }
+    free(sup_matrix->rows);
+    free(sup_matrix->columns);
+    free(sup_matrix);
 }
 candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
 {
