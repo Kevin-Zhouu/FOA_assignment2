@@ -521,7 +521,7 @@ void calc_stg_1(trace_stats_t *stats)
     int i = 0;
     int in_stg_2 = FALSE;
     int changing_to_stg2 = FALSE;
-    while (can_list->num != 0)
+    while (can_list->num != 0 && sup_matrix->n_rows > 2)
     {
         sup_matrix = generate_evt_matrix(stats->trace_list, stats);
         if (i == 0)
@@ -548,8 +548,8 @@ void calc_stg_1(trace_stats_t *stats)
 
         i++;
     }
-
     print_matrix(sup_matrix, DURING_STAGE);
+    printf("==THE END============================");
 }
 candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
 {
@@ -577,10 +577,11 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
             int pd = calc_pd(xy, &yx);
             int w = calc_w(xy, &yx, pd);
             int x_y_not_equal = (xy->x != xy->y);
+            int N = sup_matrix->n_events;
             int is_seq = pd > SEQ_PD_THRESHOLD &&
                          xy->freq > yx.freq && x_y_not_equal;
             int is_chc = (max(xy->freq, yx.freq) <=
-                              (n_rows / DECIMAL_TO_PERCENT) &&
+                              (N / DECIMAL_TO_PERCENT) &&
                           x_y_not_equal);
             int is_con = (x_y_not_equal && xy->freq > 0 && yx.freq > 0 &&
                           pd < CON_THRESHOLD);
@@ -602,7 +603,7 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
                 // check for choice
                 if (is_chc)
                 {
-                    w = n_rows * STAGE2_WEIGHT_COEFFICIENT;
+                    w = N * STAGE2_WEIGHT_COEFFICIENT;
                     add_candidate(can_list, &can_index, PATTERN_CHC, pd, w, xy);
                     free_xy = FALSE;
                 }
@@ -610,7 +611,10 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
                 {
                     if (is_seq)
                     {
-                        w *= 100;
+                        if (xy->x < 256 && xy->y < 256)
+                        {
+                            w *= 100;
+                        }
                         add_candidate(can_list, &can_index, PATTERN_SEQ, pd, w, xy);
                         free_xy = FALSE;
                     }
@@ -665,7 +669,7 @@ sup_matrix_t *generate_evt_matrix(trace_list_t *log, trace_stats_t *stats)
                 // doesnt exist! add the event
                 sup_matrix->rows[row_index] = cur_action;
                 sup_matrix->columns[row_index] = cur_action;
-                printf("adding:%d, ", cur_action);
+                // printf("adding:%d, ", cur_action);
                 row_index++;
             }
             cur_event = cur_event->next;
