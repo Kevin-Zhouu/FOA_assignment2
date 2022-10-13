@@ -534,7 +534,6 @@ void calc_stg_1_2(trace_stats_t *stats)
     while (i == 0 || (can_list->num != 0 && sup_matrix->n_rows > 2))
     {
         sup_matrix = generate_evt_matrix(stats->trace_list, stats);
-        free_can_list(can_list);
         can_list = find_pattern(sup_matrix, in_stg_2);
 
         show_stg_title = FALSE;
@@ -557,6 +556,7 @@ void calc_stg_1_2(trace_stats_t *stats)
         print_stg2(&pattern_stats);
         calc_evt_stats(stats);
         print_event_freq(stats);
+        free_can_list(can_list);
         i++;
     }
     printf("==THE END============================\n");
