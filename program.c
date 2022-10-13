@@ -174,7 +174,8 @@ candidate_t *add_candidate(candidate_list_t *can_list, int *can_index,
                            int pattern,
                            int pd, int w, sup_t *xy);
 candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2);
-pattern_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list, action_t code);
+pattern_stats_t del_seq(trace_stats_t *stats, candidate_list_t *can_list,
+                        action_t code);
 void print_matrix(sup_matrix_t *sup_matrix, int stage);
 int calc_pd(sup_t *xy, sup_t *yx);
 int calc_w(sup_t *xy, sup_t *yx, int pd);
@@ -514,8 +515,6 @@ int add_event_freq(event_freq_t *event_freq_list, int tot_events,
 }
 void calc_stg_1(trace_stats_t *stats)
 {
-    // sup_matrix_t *sup_matrix = generate_evt_matrix(stats->trace_list, stats);
-    // candidate_list_t *can_list = find_pattern(sup_matrix, FALSE);
     sup_matrix_t *sup_matrix;
     candidate_list_t *can_list;
     int i = 0;
@@ -550,7 +549,7 @@ void calc_stg_1(trace_stats_t *stats)
         i++;
     }
     // print_matrix(sup_matrix, DURING_STAGE);
-    printf("==THE END============================");
+    printf("==THE END============================\n");
 }
 candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
 {
@@ -616,14 +615,16 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
                         {
                             w *= 100;
                         }
-                        add_candidate(can_list, &can_index, PATTERN_SEQ, pd, w, xy);
+                        add_candidate(can_list, &can_index, PATTERN_SEQ,
+                                      pd, w, xy);
                         free_xy = FALSE;
                     }
                     if (is_con)
                     {
 
                         w *= 100;
-                        add_candidate(can_list, &can_index, PATTERN_CON, pd, w, xy);
+                        add_candidate(can_list, &can_index, PATTERN_CON, pd,
+                                      w, xy);
                         free_xy = FALSE;
                     }
                 }
