@@ -167,7 +167,7 @@ int action_cmp(const void *A, const void *B);
 void print_event_freq(trace_stats_t *stats);
 void print_stg_0(trace_stats_t *stats);
 
-void calc_stg_1(trace_stats_t *stats);
+void calc_stg_1_2(trace_stats_t *stats);
 int **init_matrix(int rows, int columns);
 sup_matrix_t *generate_evt_matrix(trace_list_t *log, trace_stats_t *stats);
 candidate_t *add_candidate(candidate_list_t *can_list, int *can_index,
@@ -194,6 +194,7 @@ trace_t *get_tail(trace_t *list);
 void print_trace(trace_t *list);
 void print_all_trace(trace_list_t *trace_list);
 int max(int x, int y);
+void free_stats(trace_stats_t *stats);
 int main(int argc, char *argv[])
 {
 
@@ -203,7 +204,7 @@ int main(int argc, char *argv[])
     sort_traces(trace_list);
 
     trace_stats_t stats = calc_stg_0(trace_list);
-    calc_stg_1(&stats);
+    calc_stg_1_2(&stats);
     // print_all_trace(trace_list);
     for (int i = 0; i < trace_list->num_traces; i++)
     {
@@ -211,6 +212,7 @@ int main(int argc, char *argv[])
     }
 
     free(trace_list);
+    free_stats(&stats);
     return EXIT_SUCCESS; // remember, algorithms are fun!!!
 }
 /***************************************************************
@@ -358,6 +360,17 @@ trace_stats_t calc_stg_0(trace_list_t *trace_list)
     print_stg_0(&stats);
 
     return stats;
+}
+void free_stats(trace_stats_t *stats)
+{
+    assert(stats != NULL);
+    free(stats->most_freq_trc);
+    free(stats->event_freq);
+    free(stats->trace_list->traces);
+    free(stats->trace_list);
+    free(stats->log->trcs);
+    free(stats->log);
+    free(stats);
 }
 trace_stats_t *calc_trc_stats(trace_stats_t *stats)
 {
@@ -513,7 +526,7 @@ int add_event_freq(event_freq_t *event_freq_list, int tot_events,
     event_freq_list[tot_events].freq = num_actn;
     return FALSE;
 }
-void calc_stg_1(trace_stats_t *stats)
+void calc_stg_1_2(trace_stats_t *stats)
 {
     sup_matrix_t *sup_matrix;
     candidate_list_t *can_list;
@@ -545,10 +558,8 @@ void calc_stg_1(trace_stats_t *stats)
         print_stg2(&pattern_stats);
         calc_evt_stats(stats);
         print_event_freq(stats);
-        // print_all_trace(stats->trace_list);
         i++;
     }
-    // print_matrix(sup_matrix, DURING_STAGE);
     printf("==THE END============================\n");
 }
 candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
@@ -560,7 +571,6 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
     int can_index = 0;
     int n_rows = sup_matrix->n_rows;
 
-    // print_matrix(sup_matrix, DURING_STAGE);
     //  looping over the rows
     for (int i = 0; i < n_rows; i++)
     {
@@ -586,10 +596,6 @@ candidate_list_t *find_pattern(sup_matrix_t *sup_matrix, int in_stg_2)
             int is_con = (x_y_not_equal && xy->freq > 0 && yx.freq > 0 &&
                           pd < CON_THRESHOLD);
             int free_xy = TRUE;
-            // printf("N:%d chc value:%d %d\n", sup_matrix->n_events, max(xy->freq, yx.freq),
-            //        (sup_matrix->n_events / DECIMAL_TO_PERCENT));
-
-            // printf("comparing %c %c", xy->x, xy->y);
             if (in_stg_2 == FALSE)
             {
                 if (is_seq)
@@ -786,7 +792,6 @@ candidate_t *add_candidate(candidate_list_t *can_list, int *can_index,
     can->pd = pd;
     can->w = w;
     can->pattern = pattern;
-    // printf("%d sup(%c,%c) pd=%d w=%d\n", can->pattern, can->sup->x, can->sup->y, pd, w);
     can_list->cans[*can_index] = can;
     *can_index = *can_index + 1;
     return can;
