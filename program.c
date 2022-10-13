@@ -524,6 +524,14 @@ void calc_stg_1(trace_stats_t *stats)
     while (i == 0 || (can_list->num != 0 && sup_matrix->n_rows > 2))
     {
         sup_matrix = generate_evt_matrix(stats->trace_list, stats);
+        show_stg_title = FALSE;
+        if (in_stg_2 == FALSE && (can_list->cans[0]->sup->x >= 256 ||
+                                  can_list->cans[0]->sup->y >= 256))
+        {
+            in_stg_2 = TRUE;
+            show_stg_title = TRUE;
+            can_list = find_pattern(sup_matrix, in_stg_2);
+        }
         if (i == 0)
             print_matrix(sup_matrix, 1);
         else if (show_stg_title == TRUE)
@@ -533,14 +541,8 @@ void calc_stg_1(trace_stats_t *stats)
 
         can_list = find_pattern(sup_matrix, in_stg_2);
 
-        show_stg_title = FALSE;
-        if (in_stg_2 == FALSE && (can_list->cans[0]->sup->x >= 256 || can_list->cans[0]->sup->y >= 256))
-        {
-            in_stg_2 = TRUE;
-            show_stg_title = TRUE;
-            can_list = find_pattern(sup_matrix, in_stg_2);
-        }
-        pattern_stats_t pattern_stats = del_seq(stats, can_list, (action_t)256 + i);
+        pattern_stats_t pattern_stats = del_seq(stats, can_list,
+                                                (action_t)256 + i);
         print_stg2(&pattern_stats);
         calc_evt_stats(stats);
         print_event_freq(stats);
